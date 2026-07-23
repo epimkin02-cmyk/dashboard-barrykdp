@@ -62,11 +62,34 @@
       --glow-2:         rgba(238,154,84,0.10);
     }
   }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --page:           #1C1610;
+    --surface-1:      #241D15;
+    --text-primary:   #FAF6EE;
+    --text-secondary: #D8CDBC;
+    --text-muted:     #8A7B66;
+    --grid:           #3A3128;
+    --baseline:       #4A3F33;
+    --border:         rgba(250,246,238,0.09);
+    --series-1:       #D96E12;
+    --series-2:       #0F9C8D;
+    --delta-good:     #34D399;
+    --delta-bad:      #EE9A54;
+    --bar-dim:        #3A3128;
+    --hover:          rgba(250,246,238,0.05);
+    --glass-bg:       rgba(255,255,255,0.07);
+    --glass-border:   rgba(255,255,255,0.16);
+    --glass-shadow:   0 16px 40px -16px rgba(0,0,0,0.55);
+    --glow-1:         rgba(232,122,30,0.14);
+    --glow-2:         rgba(238,154,84,0.10);
+  }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     font-family: 'Manrope', system-ui, -apple-system, "Segoe UI", sans-serif;
     background: var(--page); color: var(--text-primary);
     font-size: 14px; min-height: 100vh;
+    transition: background .25s, color .25s;
   }
   button, input { font-family: inherit; }
   .accent { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 500; color: var(--petrol); }
@@ -78,6 +101,26 @@
       repeating-linear-gradient(0deg,  transparent 0 95px, var(--border) 95px 96px),
       repeating-linear-gradient(90deg, transparent 0 95px, var(--border) 95px 96px);
   }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+  .fade { animation: fadeUp .45s ease both; }
+
+  /* toggles (Sprache + Theme) */
+  .toggles { display:flex; gap:8px; align-items:center; }
+  .lang {
+    display:inline-flex; border:1px solid var(--border); border-radius:999px;
+    background: var(--surface-1); overflow:hidden;
+  }
+  .lang button {
+    padding: 6px 12px; border:none; background:transparent; cursor:pointer;
+    font-size: 11.5px; font-weight: 800; letter-spacing:.06em; color: var(--text-muted);
+  }
+  .lang button.active { background: var(--text-primary); color: var(--page); }
+  .thm {
+    width: 32px; height: 32px; border:1px solid var(--border); border-radius:999px;
+    background: var(--surface-1); cursor:pointer; font-size: 14px; color: var(--text-secondary);
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .thm:hover { color: var(--text-primary); }
 
   /* ================= LOGIN ================= */
   #login { position: fixed; inset: 0; z-index: 60; display:flex; align-items:center; justify-content:center; padding: 20px; }
@@ -88,6 +131,7 @@
     box-shadow: 0 24px 70px -20px rgba(36,29,21,.25);
     position: relative; z-index: 1;
   }
+  .login-toggles { position:absolute; top: 16px; right: 16px; z-index: 5; }
   .login-form { padding: 56px 52px; display:flex; flex-direction:column; justify-content:center; }
   .lockup { display:flex; align-items:center; gap: 11px; }
   .lockup .mark {
@@ -112,21 +156,27 @@
   }
   .inputwrap input:focus { outline: 2px solid var(--petrol); outline-offset: -1px; }
   .inputwrap .ic { position:absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
-  #loginerr {
-    display:none; margin: 0 0 16px; padding: 10px 14px; border-radius: 9px;
-    background: rgba(160,60,0,.08); border: 1px solid rgba(160,60,0,.25);
-    color: var(--delta-bad); font-size: 12.5px; font-weight: 600;
-  }
-  .login-row { display:flex; justify-content:space-between; align-items:center; font-size: 12.5px; color: var(--text-secondary); margin: 2px 0 22px; }
+  .msg { display:none; margin: 0 0 16px; padding: 10px 14px; border-radius: 9px; font-size: 12.5px; font-weight: 600; }
+  .msg.err  { background: rgba(160,60,0,.08);  border: 1px solid rgba(160,60,0,.25);  color: var(--delta-bad); }
+  .msg.ok   { background: rgba(14,124,91,.08); border: 1px solid rgba(14,124,91,.25); color: var(--delta-good); }
+  .login-row { display:flex; justify-content:flex-end; align-items:center; font-size: 12.5px; margin: 2px 0 22px; }
+  .login-row a { color: var(--text-primary); text-decoration: none; font-weight: 700; cursor: pointer; }
+  .login-row a:hover { color: var(--petrol); }
   .btn-primary {
     width: 100%; padding: 15px; border:none; border-radius: 999px;
     background: linear-gradient(135deg, var(--petrol), var(--petrol-soft));
     color: #241D15; font-size: 12.5px; font-weight: 800;
     letter-spacing: .1em; text-transform: uppercase; cursor:pointer;
     box-shadow: 0 12px 28px -10px rgba(232,122,30,.65);
+    transition: transform .15s, filter .15s;
   }
-  .btn-primary:hover { filter: brightness(1.04); }
-  .btn-primary:disabled { opacity:.6; cursor: wait; }
+  .btn-primary:hover { filter: brightness(1.04); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity:.6; cursor: wait; transform:none; }
+  .btn-ghost {
+    width: 100%; padding: 12px; margin-top: 10px; border: 1px solid var(--baseline); border-radius: 999px;
+    background: transparent; color: var(--text-secondary); font-size: 12.5px; font-weight: 700; cursor: pointer;
+  }
+  .btn-ghost:hover { background: var(--hover); color: var(--text-primary); }
   .login-form .hint { font-size: 11.5px; color: var(--text-muted); margin-top: 22px; text-align:center; line-height: 1.55; }
   .login-promo {
     position: relative; overflow: hidden;
@@ -193,26 +243,20 @@
   .side-user { display:flex; align-items:center; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 14px; margin-top: 10px; }
   .side-user .nm { font-size: 13px; font-weight: 800; }
   .side-user .em { font-size: 11px; color: var(--text-muted); word-break: break-all; }
-  .side-user .logout {
-    margin-left:auto; flex:none; border: 1px solid var(--border); background: transparent;
-    border-radius: 8px; padding: 5px 9px; font-size: 10.5px; font-weight: 700;
-    color: var(--text-muted); cursor: pointer; letter-spacing:.04em;
-  }
+  .side-user .logout { margin-left:auto; flex:none; border: 1px solid var(--border); background: transparent; border-radius: 8px; padding: 5px 9px; font-size: 10.5px; font-weight: 700; color: var(--text-muted); cursor: pointer; letter-spacing:.04em; }
   .side-user .logout:hover { color: var(--delta-bad); border-color: var(--delta-bad); }
 
   main { padding: 0 28px 48px; min-width: 0; }
   .topbar { display:flex; align-items:center; justify-content:space-between; padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
   .crumbs { font-size: 13px; color: var(--text-muted); }
   .crumbs b { color: var(--text-primary); font-weight: 700; }
-  .top-ic { display:flex; gap: 8px; }
-  .top-ic span { width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 9px; display:flex; align-items:center; justify-content:center; color: var(--text-secondary); background: var(--surface-1); font-size: 15px; }
   .greet { display:flex; align-items:flex-end; justify-content:space-between; gap: 16px; margin-bottom: 22px; flex-wrap:wrap; }
   .greet h1 { font-size: 25px; font-weight: 800; letter-spacing: -.02em; }
   .greet p { font-size: 13.5px; color: var(--text-muted); margin-top: 5px; }
   .greet p .accent { font-size: 14.5px; }
   .chip { display:inline-flex; align-items:center; gap: 8px; border: 1px solid var(--border); background: var(--surface-1); border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 600; color: var(--text-secondary); }
 
-  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px; padding: 20px 22px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px; padding: 20px 22px; transition: transform .2s, box-shadow .2s; }
   .card h2 { font-size: 15px; font-weight: 800; letter-spacing:-.01em; display:flex; align-items:center; gap: 8px; }
   .card .cardhead { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
   .card .cardhead .sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
@@ -225,7 +269,9 @@
     border: 1px solid var(--glass-border); border-radius: 14px;
     box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-border);
     padding: 16px 18px;
+    transition: transform .2s;
   }
+  .tile:hover { transform: translateY(-2px); }
   .tile .label { font-size: 11px; font-weight: 700; letter-spacing:.1em; text-transform: uppercase; color: var(--text-muted); display:flex; align-items:center; margin-bottom: 10px; }
   .tile .row { display:flex; align-items:center; justify-content:space-between; gap: 10px; }
   .tile .value { font-size: 27px; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap; }
@@ -249,14 +295,14 @@
   .gridlines label { position:absolute; left:-34px; width: 28px; text-align:right; font-size: 11px; color: var(--text-muted); transform: translateY(-50%); }
   .bars { position:absolute; inset: 0 0 26px 34px; display:flex; align-items:flex-end; gap: 10px; padding: 0 6px; }
   .bcol { flex:1; display:flex; align-items:flex-end; height: 100%; position: relative; cursor: default; }
-  .bcol i { display:block; width: 100%; max-width: 34px; margin: 0 auto; background: var(--bar-dim); border-radius: 4px 4px 0 0; transition: background .15s; }
+  .bcol i { display:block; width: 100%; max-width: 34px; margin: 0 auto; background: var(--bar-dim); border-radius: 4px 4px 0 0; transition: height .6s cubic-bezier(.2,.7,.3,1), background .15s; }
   .bcol:hover i { background: var(--baseline); filter: brightness(.96); }
   .bcol.hl i { background: linear-gradient(180deg, var(--petrol-soft), var(--petrol)); box-shadow: 0 10px 24px -10px rgba(232,122,30,.6); }
   .bcol.hl:hover i { filter: none; }
   .xlab { position:absolute; inset: auto 0 0 34px; display:flex; gap: 10px; padding: 0 6px; }
   .xlab span { flex:1; text-align:center; font-size: 11px; color: var(--text-muted); }
-  .hline { position:absolute; left: 34px; right: 0; border-top: 1.5px dashed var(--baseline); }
-  .hbadge { position:absolute; transform: translate(-50%, -130%); background: var(--text-primary); color: var(--page); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+  .hline { position:absolute; left: 34px; right: 0; border-top: 1.5px dashed var(--baseline); opacity:0; transition: opacity .3s .5s; }
+  .hbadge { position:absolute; transform: translate(-50%, -130%); background: var(--text-primary); color: var(--page); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; white-space: nowrap; opacity:0; transition: opacity .3s; }
 
   .feed-tabs { display:flex; border:1px solid var(--border); border-radius: 999px; overflow:hidden; margin-bottom: 14px; }
   .feed-tabs button { flex:1; padding: 8px 4px; font-size: 12px; font-weight: 700; border:none; background:transparent; color: var(--text-muted); cursor:pointer; }
@@ -291,7 +337,7 @@
   .stage .stage-desc { font-size: 12px; color: var(--text-muted); margin: 3px 0 9px; }
   .barrow { display:flex; align-items:center; gap:12px; margin-bottom:5px; }
   .bartrack { flex:1; height: 24px; position:relative; }
-  .fbar { height: 24px; border-radius: 0 4px 4px 0; position:absolute; left:0; top:0; min-width: 3px; cursor: default; transition: opacity .15s; }
+  .fbar { height: 24px; border-radius: 0 4px 4px 0; position:absolute; left:0; top:0; min-width: 3px; cursor: default; transition: width .6s cubic-bezier(.2,.7,.3,1), opacity .15s; }
   .fbar:hover { opacity:.85; }
   .barrow .num { width: 190px; font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
   .barrow .num b { color: var(--text-primary); font-variant-numeric: tabular-nums; font-weight: 800; }
@@ -319,6 +365,14 @@
     color: var(--text-secondary); line-height: 1.55; max-width: 300px;
   }
   #tooltip b { color: var(--text-primary); }
+  #toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+    background: var(--text-primary); color: var(--page);
+    padding: 12px 22px; border-radius: 999px; font-size: 13px; font-weight: 700;
+    opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; z-index: 120;
+    box-shadow: 0 12px 32px rgba(0,0,0,.25);
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   footer { font-size: 11.5px; color: var(--text-muted); margin-top: 26px; text-align:center; }
 </style>
 </head>
@@ -327,36 +381,70 @@
 
 <!-- ================= LOGIN ================= -->
 <div id="login">
-  <div class="login-shell">
+  <div class="login-shell fade">
+    <div class="login-toggles toggles">
+      <span class="lang"><button id="lang-de-l" onclick="setLang('de')">DE</button><button id="lang-en-l" onclick="setLang('en')">EN</button></span>
+      <button class="thm" id="thm-l" onclick="toggleTheme()">&#9789;</button>
+    </div>
     <div class="login-form">
       <div class="lockup">
         <span class="mark">B</span>
         <span class="lt"><b>Barry KDP</b><span>WEBINAR TRACKING</span></span>
       </div>
-      <h1>Willkommen <span class="accent">zurück.</span></h1>
-      <p class="sub">Alle Webinar-Zahlen an einem Ort – nur für das Team.</p>
-      <div id="loginerr"></div>
-      <label>E-Mail-Adresse <span>*</span></label>
-      <div class="inputwrap"><span class="ic">&#9993;</span><input type="email" id="mail" placeholder="name@team.de" autocomplete="email"></div>
-      <label>Passwort <span>*</span></label>
-      <div class="inputwrap"><span class="ic">&#128274;</span><input type="password" id="pw" placeholder="••••••••" autocomplete="current-password"></div>
-      <button class="btn-primary" id="loginbtn" onclick="doLogin()">Anmelden</button>
-      <p class="hint">Zugriff nur für eingeladene Team-Accounts · SSL-verschlüsselt.<br>Passwort vergessen oder neuer Account? Bei Egor melden.</p>
+
+      <!-- Panel: Login -->
+      <div id="panel-login">
+        <h1 id="t-login-h1"></h1>
+        <p class="sub" id="t-login-sub"></p>
+        <div class="msg err" id="loginerr"></div>
+        <label id="t-lbl-mail"></label>
+        <div class="inputwrap"><span class="ic">&#9993;</span><input type="email" id="mail" placeholder="name@team.de" autocomplete="email"></div>
+        <label id="t-lbl-pw"></label>
+        <div class="inputwrap"><span class="ic">&#128274;</span><input type="password" id="pw" placeholder="••••••••" autocomplete="current-password"></div>
+        <div class="login-row"><a id="t-forgot-link" onclick="showPanel('forgot')"></a></div>
+        <button class="btn-primary" id="loginbtn" onclick="doLogin()"></button>
+        <p class="hint" id="t-login-hint"></p>
+      </div>
+
+      <!-- Panel: Passwort vergessen -->
+      <div id="panel-forgot" style="display:none">
+        <h1 id="t-forgot-h1"></h1>
+        <p class="sub" id="t-forgot-sub"></p>
+        <div class="msg err" id="forgoterr"></div>
+        <div class="msg ok" id="forgotok"></div>
+        <label id="t-lbl-mail2"></label>
+        <div class="inputwrap"><span class="ic">&#9993;</span><input type="email" id="mail2" placeholder="name@team.de" autocomplete="email"></div>
+        <button class="btn-primary" id="forgotbtn" onclick="doForgot()"></button>
+        <button class="btn-ghost" id="t-back-login" onclick="showPanel('login')"></button>
+      </div>
+
+      <!-- Panel: Neues Passwort -->
+      <div id="panel-newpw" style="display:none">
+        <h1 id="t-newpw-h1"></h1>
+        <p class="sub" id="t-newpw-sub"></p>
+        <div class="msg err" id="newpwerr"></div>
+        <label id="t-lbl-npw"></label>
+        <div class="inputwrap"><span class="ic">&#128274;</span><input type="password" id="npw1" placeholder="••••••••" autocomplete="new-password"></div>
+        <label id="t-lbl-npw2"></label>
+        <div class="inputwrap"><span class="ic">&#128274;</span><input type="password" id="npw2" placeholder="••••••••" autocomplete="new-password"></div>
+        <button class="btn-primary" id="newpwbtn" onclick="doNewPassword()"></button>
+      </div>
     </div>
+
     <div class="login-promo">
       <div class="promo-mock">
         <div class="mrow">
           <div class="mcard"><div class="l">Leads</div><div class="v">402</div><div class="d">▲ 15,5 %</div></div>
-          <div class="mcard"><div class="l">Show-Rate</div><div class="v">49,6 %</div><div class="d">▲ 11,2 %</div></div>
-          <div class="mcard"><div class="l">Umsatz</div><div class="v">145 T€</div><div class="d">▲ 47,3 %</div></div>
+          <div class="mcard"><div class="l" id="t-promo-show"></div><div class="v">49,6 %</div><div class="d">▲ 11,2 %</div></div>
+          <div class="mcard"><div class="l" id="t-promo-rev"></div><div class="v">145 T€</div><div class="d">▲ 47,3 %</div></div>
         </div>
         <div class="promo-bars">
           <i style="height:34%"></i><i style="height:42%"></i><i style="height:38%"></i><i style="height:52%"></i>
           <i style="height:58%"></i><i style="height:64%"></i><i style="height:72%"></i><i class="hl" style="height:92%"></i>
         </div>
       </div>
-      <p class="promo-quote"><b>Endlich sehen wir nach jedem Webinar sofort,</b> welcher Schritt im Funnel besser läuft – und wo wir Geld liegen lassen. <span class="accent">Keine fünf Tools mehr.</span></p>
-      <div class="promo-who"><span class="avatar">B</span><span><b>Barry</b>Founder · Amazon KDP Ads Coach</span></div>
+      <p class="promo-quote" id="t-promo-quote"></p>
+      <div class="promo-who"><span class="avatar">B</span><span><b>Barry</b><span id="t-promo-role"></span></span></div>
     </div>
   </div>
 </div>
@@ -369,126 +457,130 @@
         <span class="mark">B</span>
         <span class="lt"><b>Barry KDP</b><span>WEBINAR TRACKING</span></span>
       </div>
-      <div class="side-search">&#128269; Suchen… <kbd>&#8984;K</kbd></div>
+      <div class="side-search"><span>&#128269;</span><span id="t-search"></span> <kbd>&#8984;K</kbd></div>
 
-      <div class="side-sec">Navigation</div>
-      <button class="nav-item active" data-page="overview"><span class="nic">&#9638;</span> Übersicht</button>
-      <button class="nav-item" data-page="funnel"><span class="nic">&#9660;</span> Funnel &amp; Vergleich</button>
-      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128101;</span> Leads <span class="soon">bald</span></button>
-      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128179;</span> Käufe <span class="soon">bald</span></button>
-      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#127909;</span> Webinare <span class="soon">bald</span></button>
+      <div class="side-sec" id="t-nav"></div>
+      <button class="nav-item active" data-page="overview"><span class="nic">&#9638;</span> <span id="t-nav-overview"></span></button>
+      <button class="nav-item" data-page="funnel"><span class="nic">&#9660;</span> <span id="t-nav-funnel"></span></button>
+      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128101;</span> Leads <span class="soon" data-soon></span></button>
+      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128179;</span> <span id="t-nav-sales"></span> <span class="soon" data-soon></span></button>
+      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#127909;</span> <span id="t-nav-webinars"></span> <span class="soon" data-soon></span></button>
 
-      <div class="side-sec">Analyse &amp; Insights</div>
-      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128200;</span> Berichte <span class="soon">bald</span></button>
-      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128257;</span> Integrationen <span class="soon">bald</span></button>
+      <div class="side-sec" id="t-nav-analytics"></div>
+      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128200;</span> <span id="t-nav-reports"></span> <span class="soon" data-soon></span></button>
+      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128257;</span> <span id="t-nav-int"></span> <span class="soon" data-soon></span></button>
 
       <div class="side-bottom">
         <div class="side-sec">Support</div>
-        <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#10067;</span> Hilfe</button>
-        <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#9881;</span> Einstellungen</button>
+        <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#10067;</span> <span id="t-nav-help"></span></button>
+        <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#9881;</span> <span id="t-nav-settings"></span></button>
         <div class="side-user">
           <span class="avatar" id="user-ini">–</span>
           <span><span class="nm" id="user-name">–</span><br><span class="em" id="user-mail">–</span></span>
-          <button class="logout" onclick="doLogout()" title="Abmelden">Logout</button>
+          <button class="logout" onclick="doLogout()" title="Logout">Logout</button>
         </div>
       </div>
     </aside>
 
     <main>
       <div class="topbar">
-        <div class="crumbs" id="crumbs">Übersicht &nbsp;/&nbsp; <b>Dashboard</b></div>
-        <div class="top-ic"><span>&#128276;</span><span>&#9881;</span></div>
+        <div class="crumbs" id="crumbs"></div>
+        <div class="toggles">
+          <span class="lang"><button id="lang-de" onclick="setLang('de')">DE</button><button id="lang-en" onclick="setLang('en')">EN</button></span>
+          <button class="thm" id="thm" onclick="toggleTheme()">&#9789;</button>
+        </div>
       </div>
 
       <section id="page-overview">
-        <div class="greet">
+        <div class="greet fade">
           <div>
-            <h1 id="greeting">Hallo &#128075;</h1>
-            <p>Mach deine Webinare <span class="accent">profitabler</span> – alle Zahlen, automatisch aktualisiert über Make.</p>
+            <h1 id="greeting">&#128075;</h1>
+            <p id="t-greet-sub"></p>
           </div>
-          <span class="chip">&#128197; Webinar #2 vs. #1 &nbsp;▾</span>
+          <span class="chip">&#128197; <span id="t-chip-compare"></span> ▾</span>
         </div>
 
-        <div class="kpis" id="kpis"></div>
+        <div class="kpis fade" id="kpis"></div>
 
-        <div class="grid-main">
+        <div class="grid-main fade">
           <div class="card">
             <div class="cardhead">
-              <div><span class="eyebrow">Anmeldungen · 14 Tage</span><h2>Anmeldungen pro Tag</h2><div class="sub">Die 14 Tage vor Webinar #2 · „Tag 0“ = Webinar-Tag · Orange = stärkster Tag</div></div>
+              <div><span class="eyebrow" id="t-chart-eyebrow"></span><h2 id="t-chart-h2"></h2><div class="sub" id="t-chart-sub"></div></div>
               <span class="chip">Webinar #2 ▾</span>
             </div>
             <div class="bigchart" id="bigchart"></div>
           </div>
 
           <div class="card">
-            <div class="cardhead"><div><span class="eyebrow">Live</span><h2>Neueste Aktivitäten</h2></div></div>
+            <div class="cardhead"><div><span class="eyebrow">Live</span><h2 id="t-feed-h2"></h2></div></div>
             <div class="feed-tabs">
-              <button class="active">Aktuell</button><button disabled style="opacity:.6">Gestern</button><button disabled style="opacity:.6">Diese Woche</button>
+              <button class="active" id="t-tab-now"></button><button disabled style="opacity:.6" id="t-tab-yday"></button><button disabled style="opacity:.6" id="t-tab-week"></button>
             </div>
             <div class="feed-count" id="feed-count"></div>
             <div class="feed" id="feed"></div>
           </div>
         </div>
 
-        <div class="card">
+        <div class="card fade">
           <div class="cardhead">
-            <div><span class="eyebrow">Ereignis-Log</span><h2>Letzte Ereignisse</h2><div class="sub">Automatisch erfasst aus Typeform, GHL, WebinarJam, Leadtable und Stripe</div></div>
-            <span class="tbl-search">&#128269; Kontakt suchen…</span>
+            <div><span class="eyebrow" id="t-ev-eyebrow"></span><h2 id="t-ev-h2"></h2><div class="sub" id="t-ev-sub"></div></div>
+            <span class="tbl-search">&#128269; <span id="t-ev-search"></span></span>
           </div>
           <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>Kontakt</th><th>Ereignis</th><th>Webinar</th><th>Quelle</th><th>Wann</th><th class="r">Betrag</th></tr></thead>
+            <thead><tr><th id="th-contact"></th><th id="th-event"></th><th>Webinar</th><th id="th-source"></th><th id="th-when"></th><th class="r" id="th-amount"></th></tr></thead>
             <tbody id="events"></tbody>
           </table>
           </div>
         </div>
 
-        <div class="ctabar">
-          <div><b>Bereit für Webinar #3?</b><span>Funnel steht · Tracking läuft automatisch mit, sobald die ersten Eintragungen kommen.</span></div>
-          <button>Webinar #3 anlegen</button>
+        <div class="ctabar fade">
+          <div><b id="t-cta-b"></b><span id="t-cta-s"></span></div>
+          <button id="t-cta-btn"></button>
         </div>
       </section>
 
       <section id="page-funnel" style="display:none">
         <div class="greet">
           <div>
-            <span class="eyebrow">Analyse</span>
-            <h1>Funnel &amp; Vergleich</h1>
-            <p>Von der Typeform-Eintragung bis zum Upsell – jede Stufe in Zahlen und <span class="accent">Prozent.</span></p>
+            <span class="eyebrow" id="t-f-eyebrow"></span>
+            <h1 id="t-f-h1"></h1>
+            <p id="t-f-sub"></p>
           </div>
         </div>
 
         <div class="seg" id="viewseg">
-          <button data-view="both" class="active">Beide vergleichen</button>
-          <button data-view="w1">Nur Webinar #1</button>
-          <button data-view="w2">Nur Webinar #2</button>
+          <button data-view="both" class="active" id="t-seg-both"></button>
+          <button data-view="w1" id="t-seg-w1"></button>
+          <button data-view="w2" id="t-seg-w2"></button>
         </div>
 
         <div class="card" style="margin-bottom:14px">
           <div class="cardhead">
-            <div><span class="eyebrow">Schritt für Schritt</span><h2 id="funnel-title">Der Funnel</h2><div class="sub">Die Prozentzahl sagt: So viele aus der vorherigen Stufe haben es bis hierher geschafft. Mit der Maus über die Balken fahren zeigt Details.</div></div>
+            <div><span class="eyebrow" id="t-f-card-eyebrow"></span><h2 id="funnel-title"></h2><div class="sub" id="t-f-card-sub"></div></div>
           </div>
           <div class="legend" id="funnel-legend">
-            <span class="key"><span class="sw" style="background:var(--series-1)"></span><span id="leg1">Webinar #1</span></span>
-            <span class="key"><span class="sw" style="background:var(--series-2)"></span><span id="leg2">Webinar #2</span></span>
+            <span class="key"><span class="sw" style="background:var(--series-1)"></span><span id="leg1"></span></span>
+            <span class="key"><span class="sw" style="background:var(--series-2)"></span><span id="leg2"></span></span>
           </div>
           <div id="funnel"></div>
         </div>
 
         <div class="card">
-          <div class="cardhead"><div><span class="eyebrow">Nachschlagen</span><h2>Alle Zahlen im Detail</h2><div class="sub">Grün markiert ist jeweils der bessere Prozentwert</div></div></div>
+          <div class="cardhead"><div><span class="eyebrow" id="t-tbl-eyebrow"></span><h2 id="t-tbl-h2"></h2><div class="sub" id="t-tbl-sub"></div></div></div>
           <div style="overflow-x:auto">
           <table id="tbl"></table>
           </div>
         </div>
       </section>
 
-      <footer>Barry KDP · Webinar Tracking · Zugriff nur für eingeladene Teammitglieder</footer>
+      <footer id="t-footer"></footer>
     </main>
   </div>
 </div>
 
 <div id="tooltip"></div>
+<div id="toast"></div>
 
 <script>
 /* ================= Supabase ================= */
@@ -496,300 +588,575 @@ const SUPABASE_URL = "https://jkylhdlnimjuqcfukoxs.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_1hWjDPNN0L7ZIH_Lw1K7gg_7FsZIu6h";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ================= Zustand ================= */
-const STAGES = [
-  { key:"typeform",  name:"Typeform-Eintragungen",     desc:"Alle, die das Anmeldeformular ausgefüllt haben (Quelle: Typeform)" },
-  { key:"leads",     name:"Qualifizierte Leads",        desc:"Davon als qualifizierter Kontakt in GHL angelegt (Quelle: GHL)" },
-  { key:"regs",      name:"Webinar-Anmeldungen",        desc:"Davon einen Platz im Webinar gesichert (Quelle: WebinarJam)" },
-  { key:"show",      name:"Live dabei (Show)",          desc:"Davon wirklich live teilgenommen – die Show-Rate (Quelle: WebinarJam)" },
-  { key:"calls",     name:"Strategiegespräche gebucht", desc:"Davon nach dem Webinar ein Gespräch gebucht (Quelle: Leadtable/GHL)" },
-  { key:"coaching",  name:"Coaching gekauft",           desc:"Davon im Gespräch das Coaching gekauft (Quelle: Stripe/GHL)" },
-  { key:"upsell",    name:"Upsell gekauft",             desc:"Davon zusätzlich das Aufbau-Produkt gekauft (Quelle: Stripe)" },
-];
-let W1 = null, W2 = null, TS2 = [], KPI = [], EVENTS = [];
-let view = "both";
+/* ================= i18n ================= */
+const I18N = {
+  de: {
+    loginH1: 'Willkommen <span class="accent">zurück.</span>',
+    loginSub: 'Alle Webinar-Zahlen an einem Ort – nur für das Team.',
+    lblMail: 'E-Mail-Adresse <span>*</span>', lblPw: 'Passwort <span>*</span>',
+    forgotLink: 'Passwort vergessen?', signIn: 'Anmelden', signingIn: 'Anmelden…',
+    loginErr: 'Anmeldung fehlgeschlagen – E-Mail oder Passwort ist nicht korrekt.',
+    loginHint: 'Zugriff nur für eingeladene Team-Accounts · SSL-verschlüsselt.',
+    forgotH1: 'Passwort <span class="accent">zurücksetzen.</span>',
+    forgotSub: 'Wir schicken dir einen Link an deine E-Mail-Adresse.',
+    sendLink: 'Link senden', sending: 'Senden…',
+    forgotOk: 'E-Mail ist unterwegs! Öffne den Link darin, um ein neues Passwort zu setzen.',
+    forgotErr: 'Das hat nicht geklappt. Ist die E-Mail-Adresse richtig geschrieben?',
+    backLogin: 'Zurück zum Login',
+    newpwH1: 'Neues Passwort <span class="accent">setzen.</span>',
+    newpwSub: 'Mindestens 8 Zeichen – am besten im Passwort-Manager speichern.',
+    lblNpw: 'Neues Passwort <span>*</span>', lblNpw2: 'Passwort wiederholen <span>*</span>',
+    saveSignIn: 'Speichern & anmelden', saving: 'Speichern…',
+    pwShort: 'Bitte mindestens 8 Zeichen.', pwMismatch: 'Die Passwörter stimmen nicht überein.',
+    pwUpdated: 'Passwort aktualisiert – willkommen!',
+    promoShow: 'Show-Rate', promoRev: 'Umsatz',
+    promoQuote: '<b>Endlich sehen wir nach jedem Webinar sofort,</b> welcher Schritt im Funnel besser läuft – und wo wir Geld liegen lassen. <span class="accent">Keine fünf Tools mehr.</span>',
+    promoRole: 'Founder · Amazon KDP Ads Coach',
+    search: 'Suchen…', nav: 'Navigation', navOverview: 'Übersicht', navFunnel: 'Funnel & Vergleich',
+    navSales: 'Käufe', navWebinars: 'Webinare', navAnalytics: 'Analyse & Insights',
+    navReports: 'Berichte', navInt: 'Integrationen', navHelp: 'Hilfe', navSettings: 'Einstellungen', soon: 'bald',
+    crumbsOverview: 'Übersicht &nbsp;/&nbsp; <b>Dashboard</b>', crumbsFunnel: 'Analyse &nbsp;/&nbsp; <b>Funnel & Vergleich</b>',
+    hello: 'Hallo', greetSub: 'Mach deine Webinare <span class="accent">profitabler</span> – alle Zahlen, automatisch aktualisiert über Make.',
+    chipCompare: 'Webinar #2 vs. #1',
+    chartEyebrow: 'Anmeldungen · 14 Tage', chartH2: 'Anmeldungen pro Tag',
+    chartSub: 'Die 14 Tage vor Webinar #2 · „Tag 0“ = Webinar-Tag · Orange = stärkster Tag',
+    feedH2: 'Neueste Aktivitäten', tabNow: 'Aktuell', tabYday: 'Gestern', tabWeek: 'Diese Woche',
+    feedCount: n => `${n} letzte Ereignisse`,
+    evEyebrow: 'Ereignis-Log', evH2: 'Letzte Ereignisse',
+    evSub: 'Automatisch erfasst aus Typeform, GHL, WebinarJam, Leadtable und Stripe',
+    evSearch: 'Kontakt suchen…',
+    thContact: 'Kontakt', thEvent: 'Ereignis', thSource: 'Quelle', thWhen: 'Wann', thAmount: 'Betrag',
+    ctaB: 'Bereit für Webinar #3?', ctaS: 'Funnel steht · Tracking läuft automatisch mit, sobald die ersten Eintragungen kommen.',
+    ctaBtn: 'Webinar #3 anlegen',
+    fEyebrow: 'Analyse', fH1: 'Funnel & Vergleich',
+    fSub: 'Von der Typeform-Eintragung bis zum Upsell – jede Stufe in Zahlen und <span class="accent">Prozent.</span>',
+    segBoth: 'Beide vergleichen', segW1: 'Nur Webinar #1', segW2: 'Nur Webinar #2',
+    fCardEyebrow: 'Schritt für Schritt', funnelTitle: 'Der Funnel', funnelTitleOne: n => 'Der Funnel – ' + n,
+    fCardSub: 'Die Prozentzahl sagt: So viele aus der vorherigen Stufe haben es bis hierher geschafft. Mit der Maus über die Balken fahren zeigt Details.',
+    tblEyebrow: 'Nachschlagen', tblH2: 'Alle Zahlen im Detail', tblSub: 'Grün markiert ist jeweils der bessere Prozentwert',
+    thStage: 'Stufe', thConv: 'Conversion', totalRevenue: 'Umsatz gesamt',
+    persons: 'Personen', ofPrev: 'der Vorstufe', ofPrevLong: 'der vorherigen Stufe', ofAll: 'aller Eintragungen',
+    vs: 'vs.', today: 'heute', dayZero: 'Tag 0', day: 'Tag', daysBefore: d => `${d} Tage vorher`, webinarDay: 'Webinar-Tag',
+    regs: 'Anmeldungen',
+    footer: 'Barry KDP · Webinar Tracking · Zugriff nur für eingeladene Teammitglieder',
+    dataErr: 'Angemeldet, aber Daten konnten nicht geladen werden. Ist das SQL-Setup gelaufen?',
+    kpiTypeform: 'Typeform-Eintragungen', kpiShow: 'Show-Rate', kpiCoaching: 'Coaching-Käufe', kpiRevenue: 'Umsatz',
+    tipTypeform: 'Wie viele Menschen das Typeform-Formular ausgefüllt haben – der Startpunkt des Funnels. Vergleich: Webinar #2 vs. #1.',
+    tipShow: (a,b) => `Anteil der Angemeldeten, die wirklich live im Webinar waren. ${a} von ${b} Angemeldeten.`,
+    tipCoaching: 'Teilnehmer, die nach dem Strategiegespräch das Coaching gekauft haben (Stripe/GHL).',
+    tipRevenue: 'Gesamtumsatz aus Coaching- und Upsell-Käufen von Webinar #2.',
+    stages: {
+      typeform: ['Typeform-Eintragungen', 'Alle, die das Anmeldeformular ausgefüllt haben (Quelle: Typeform)'],
+      leads:    ['Qualifizierte Leads', 'Davon als qualifizierter Kontakt in GHL angelegt (Quelle: GHL)'],
+      regs:     ['Webinar-Anmeldungen', 'Davon einen Platz im Webinar gesichert (Quelle: WebinarJam)'],
+      show:     ['Live dabei (Show)', 'Davon wirklich live teilgenommen – die Show-Rate (Quelle: WebinarJam)'],
+      calls:    ['Strategiegespräche gebucht', 'Davon nach dem Webinar ein Gespräch gebucht (Quelle: Leadtable/GHL)'],
+      coaching: ['Coaching gekauft', 'Davon im Gespräch das Coaching gekauft (Quelle: Stripe/GHL)'],
+      upsell:   ['Upsell gekauft', 'Davon zusätzlich das Aufbau-Produkt gekauft (Quelle: Stripe)'],
+    },
+    kinds: { lead:'Neuer qualifizierter Lead', call:'Gespräch gebucht', show:'Live dabei (Show)', coaching:'Coaching gekauft', upsell:'Upsell gekauft', sync:'Make-Szenario gelaufen' },
+    langToast: 'Sprache: Deutsch',
+  },
+  en: {
+    loginH1: 'Welcome <span class="accent">back.</span>',
+    loginSub: 'All your webinar numbers in one place – team only.',
+    lblMail: 'Email address <span>*</span>', lblPw: 'Password <span>*</span>',
+    forgotLink: 'Forgot password?', signIn: 'Sign in', signingIn: 'Signing in…',
+    loginErr: 'Sign-in failed – email or password is incorrect.',
+    loginHint: 'Access for invited team accounts only · SSL encrypted.',
+    forgotH1: 'Reset your <span class="accent">password.</span>',
+    forgotSub: 'We will email you a reset link.',
+    sendLink: 'Send link', sending: 'Sending…',
+    forgotOk: 'Email sent! Open the link inside to set a new password.',
+    forgotErr: 'That did not work. Is the email address spelled correctly?',
+    backLogin: 'Back to sign-in',
+    newpwH1: 'Set a new <span class="accent">password.</span>',
+    newpwSub: 'At least 8 characters – best saved in your password manager.',
+    lblNpw: 'New password <span>*</span>', lblNpw2: 'Repeat password <span>*</span>',
+    saveSignIn: 'Save & sign in', saving: 'Saving…',
+    pwShort: 'Please use at least 8 characters.', pwMismatch: 'The passwords do not match.',
+    pwUpdated: 'Password updated – welcome!',
+    promoShow: 'Show rate', promoRev: 'Revenue',
+    promoQuote: '<b>After every webinar we instantly see</b> which funnel step performs better – and where we leave money on the table. <span class="accent">No more five tools.</span>',
+    promoRole: 'Founder · Amazon KDP Ads Coach',
+    search: 'Search…', nav: 'Navigation', navOverview: 'Overview', navFunnel: 'Funnel & Comparison',
+    navSales: 'Purchases', navWebinars: 'Webinars', navAnalytics: 'Analytics & Insights',
+    navReports: 'Reports', navInt: 'Integrations', navHelp: 'Help', navSettings: 'Settings', soon: 'soon',
+    crumbsOverview: 'Overview &nbsp;/&nbsp; <b>Dashboard</b>', crumbsFunnel: 'Analytics &nbsp;/&nbsp; <b>Funnel & Comparison</b>',
+    hello: 'Hello', greetSub: 'Make your webinars more <span class="accent">profitable</span> – every number, auto-updated via Make.',
+    chipCompare: 'Webinar #2 vs. #1',
+    chartEyebrow: 'Registrations · 14 days', chartH2: 'Registrations per day',
+    chartSub: 'The 14 days before webinar #2 · “Day 0” = webinar day · orange = strongest day',
+    feedH2: 'Latest activity', tabNow: 'Latest', tabYday: 'Yesterday', tabWeek: 'This week',
+    feedCount: n => `${n} recent events`,
+    evEyebrow: 'Event log', evH2: 'Recent events',
+    evSub: 'Captured automatically from Typeform, GHL, WebinarJam, Leadtable and Stripe',
+    evSearch: 'Search contact…',
+    thContact: 'Contact', thEvent: 'Event', thSource: 'Source', thWhen: 'When', thAmount: 'Amount',
+    ctaB: 'Ready for webinar #3?', ctaS: 'Funnel is set · tracking starts automatically with the first sign-ups.',
+    ctaBtn: 'Create webinar #3',
+    fEyebrow: 'Analytics', fH1: 'Funnel & Comparison',
+    fSub: 'From Typeform sign-up to upsell – every step in numbers and <span class="accent">percent.</span>',
+    segBoth: 'Compare both', segW1: 'Webinar #1 only', segW2: 'Webinar #2 only',
+    fCardEyebrow: 'Step by step', funnelTitle: 'The funnel', funnelTitleOne: n => 'The funnel – ' + n,
+    fCardSub: 'The percentage tells you how many people from the previous step made it here. Hover the bars for details.',
+    tblEyebrow: 'Reference', tblH2: 'Every number in detail', tblSub: 'Green marks the better conversion rate',
+    thStage: 'Stage', thConv: 'Conversion', totalRevenue: 'Total revenue',
+    persons: 'people', ofPrev: 'of previous step', ofPrevLong: 'of the previous step', ofAll: 'of all sign-ups',
+    vs: 'vs.', today: 'today', dayZero: 'Day 0', day: 'Day', daysBefore: d => `${d} days before`, webinarDay: 'Webinar day',
+    regs: 'registrations',
+    footer: 'Barry KDP · Webinar Tracking · Access for invited team members only',
+    dataErr: 'Signed in, but data could not be loaded. Did the SQL setup run?',
+    kpiTypeform: 'Typeform sign-ups', kpiShow: 'Show rate', kpiCoaching: 'Coaching sales', kpiRevenue: 'Revenue',
+    tipTypeform: 'How many people filled out the Typeform – the start of the funnel. Comparison: webinar #2 vs. #1.',
+    tipShow: (a,b) => `Share of registrants who actually attended live. ${a} of ${b} registrants.`,
+    tipCoaching: 'Attendees who bought the coaching after the strategy call (Stripe/GHL).',
+    tipRevenue: 'Total revenue from coaching and upsell sales of webinar #2.',
+    stages: {
+      typeform: ['Typeform sign-ups', 'Everyone who filled out the sign-up form (source: Typeform)'],
+      leads:    ['Qualified leads', 'Of those, created as a qualified contact in GHL (source: GHL)'],
+      regs:     ['Webinar registrations', 'Of those, secured a seat in the webinar (source: WebinarJam)'],
+      show:     ['Attended live (show)', 'Of those, actually attended live – the show rate (source: WebinarJam)'],
+      calls:    ['Strategy calls booked', 'Of those, booked a call after the webinar (source: Leadtable/GHL)'],
+      coaching: ['Coaching purchased', 'Of those, bought the coaching on the call (source: Stripe/GHL)'],
+      upsell:   ['Upsell purchased', 'Of those, also bought the follow-up product (source: Stripe)'],
+    },
+    kinds: { lead:'New qualified lead', call:'Call booked', show:'Attended live', coaching:'Coaching purchased', upsell:'Upsell purchased', sync:'Make scenario ran' },
+    langToast: 'Language: English',
+  },
+};
 
-const fmt  = n => Number(n).toLocaleString("de-DE");
-const fmtE = n => Number(n).toLocaleString("de-DE") + " €";
+let lang = 'de';
+try { lang = localStorage.getItem('barry-lang') || 'de'; } catch(e) {}
+const T = () => I18N[lang];
+const LOC = () => lang === 'de' ? 'de-DE' : 'en-US';
+
+/* ================= Zustand ================= */
+const STAGE_KEYS = ['typeform','leads','regs','show','calls','coaching','upsell'];
+let W1 = null, W2 = null, TS2 = [], EVENTS = [];
+let view = 'both';
+let loggedIn = false;
+
+const fmt  = n => Number(n).toLocaleString(LOC());
+const fmtE = n => lang === 'de' ? Number(n).toLocaleString('de-DE') + ' €' : '€' + Number(n).toLocaleString('en-US');
 const pct  = (a,b) => b ? (100*a/b) : 0;
-const pctS = (a,b) => pct(a,b).toLocaleString("de-DE",{minimumFractionDigits:1, maximumFractionDigits:1}) + " %";
+const pctS = (a,b) => pct(a,b).toLocaleString(LOC(),{minimumFractionDigits:1, maximumFractionDigits:1}) + ' %';
 const dpct = (a,b) => b ? 100*(a-b)/b : 0;
-const css = v => getComputedStyle(document.querySelector(".viz-root")).getPropertyValue(v).trim();
+const css = v => getComputedStyle(document.querySelector('.viz-root')).getPropertyValue(v).trim();
+
+/* ================= Theme ================= */
+function applyTheme(t){
+  if (t) document.documentElement.dataset.theme = t;
+  else delete document.documentElement.dataset.theme;
+  const icon = (document.documentElement.dataset.theme === 'dark') ? '☀' : '☽';
+  const b1 = document.getElementById('thm'), b2 = document.getElementById('thm-l');
+  if (b1) b1.innerHTML = icon; if (b2) b2.innerHTML = icon;
+}
+function toggleTheme(){
+  const cur = document.documentElement.dataset.theme;
+  const next = cur === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem('barry-theme', next); } catch(e) {}
+  if (loggedIn) renderAll();
+}
+try { const t0 = localStorage.getItem('barry-theme'); applyTheme(t0 || null); } catch(e) { applyTheme(null); }
+
+/* ================= Sprache ================= */
+function setLang(l){
+  if (l === lang) return;
+  lang = l;
+  try { localStorage.setItem('barry-lang', l); } catch(e) {}
+  translate();
+  if (loggedIn) renderAll();
+  toast(T().langToast);
+}
+function setHtml(id, html){ const el = document.getElementById(id); if (el) el.innerHTML = html; }
+function translate(){
+  const t = T();
+  document.documentElement.lang = lang;
+  ['lang-de','lang-de-l'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('active', lang==='de'); });
+  ['lang-en','lang-en-l'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('active', lang==='en'); });
+  setHtml('t-login-h1', t.loginH1); setHtml('t-login-sub', t.loginSub);
+  setHtml('t-lbl-mail', t.lblMail); setHtml('t-lbl-pw', t.lblPw);
+  setHtml('t-forgot-link', t.forgotLink);
+  const lb = document.getElementById('loginbtn'); if (lb && !lb.disabled) lb.textContent = t.signIn;
+  setHtml('t-login-hint', t.loginHint);
+  setHtml('t-forgot-h1', t.forgotH1); setHtml('t-forgot-sub', t.forgotSub);
+  setHtml('t-lbl-mail2', t.lblMail);
+  const fb = document.getElementById('forgotbtn'); if (fb && !fb.disabled) fb.textContent = t.sendLink;
+  setHtml('t-back-login', t.backLogin);
+  setHtml('t-newpw-h1', t.newpwH1); setHtml('t-newpw-sub', t.newpwSub);
+  setHtml('t-lbl-npw', t.lblNpw); setHtml('t-lbl-npw2', t.lblNpw2);
+  const nb = document.getElementById('newpwbtn'); if (nb && !nb.disabled) nb.textContent = t.saveSignIn;
+  setHtml('t-promo-show', t.promoShow); setHtml('t-promo-rev', t.promoRev);
+  setHtml('t-promo-quote', t.promoQuote); setHtml('t-promo-role', t.promoRole);
+  setHtml('t-search', t.search); setHtml('t-nav', t.nav);
+  setHtml('t-nav-overview', t.navOverview); setHtml('t-nav-funnel', t.navFunnel);
+  setHtml('t-nav-sales', t.navSales); setHtml('t-nav-webinars', t.navWebinars);
+  setHtml('t-nav-analytics', t.navAnalytics); setHtml('t-nav-reports', t.navReports);
+  setHtml('t-nav-int', t.navInt); setHtml('t-nav-help', t.navHelp); setHtml('t-nav-settings', t.navSettings);
+  document.querySelectorAll('[data-soon]').forEach(el => el.textContent = t.soon);
+  const pg = document.getElementById('page-overview').style.display !== 'none' ? 'overview' : 'funnel';
+  setHtml('crumbs', pg === 'overview' ? t.crumbsOverview : t.crumbsFunnel);
+  setHtml('t-greet-sub', t.greetSub); setHtml('t-chip-compare', t.chipCompare);
+  setHtml('t-chart-eyebrow', t.chartEyebrow); setHtml('t-chart-h2', t.chartH2); setHtml('t-chart-sub', t.chartSub);
+  setHtml('t-feed-h2', t.feedH2); setHtml('t-tab-now', t.tabNow); setHtml('t-tab-yday', t.tabYday); setHtml('t-tab-week', t.tabWeek);
+  setHtml('t-ev-eyebrow', t.evEyebrow); setHtml('t-ev-h2', t.evH2); setHtml('t-ev-sub', t.evSub); setHtml('t-ev-search', t.evSearch);
+  setHtml('th-contact', t.thContact); setHtml('th-event', t.thEvent); setHtml('th-source', t.thSource);
+  setHtml('th-when', t.thWhen); setHtml('th-amount', t.thAmount);
+  setHtml('t-cta-b', t.ctaB); setHtml('t-cta-s', t.ctaS); setHtml('t-cta-btn', t.ctaBtn);
+  setHtml('t-f-eyebrow', t.fEyebrow); setHtml('t-f-h1', t.fH1); setHtml('t-f-sub', t.fSub);
+  setHtml('t-seg-both', t.segBoth); setHtml('t-seg-w1', t.segW1); setHtml('t-seg-w2', t.segW2);
+  setHtml('t-f-card-eyebrow', t.fCardEyebrow); setHtml('t-f-card-sub', t.fCardSub);
+  setHtml('t-tbl-eyebrow', t.tblEyebrow); setHtml('t-tbl-h2', t.tblH2); setHtml('t-tbl-sub', t.tblSub);
+  setHtml('t-footer', t.footer);
+}
+
+/* ================= Toast ================= */
+let toastTimer = null;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+/* ================= Login-Panels ================= */
+function showPanel(which){
+  ['login','forgot','newpw'].forEach(p => {
+    document.getElementById('panel-' + p).style.display = p === which ? 'block' : 'none';
+  });
+  document.querySelectorAll('.msg').forEach(m => m.style.display = 'none');
+  if (which === 'forgot') {
+    document.getElementById('mail2').value = document.getElementById('mail').value;
+  }
+}
 
 /* ================= Auth ================= */
 async function init(){
+  translate();
   const { data: { session } } = await sb.auth.getSession();
   if (session) await enterApp();
 }
+sb.auth.onAuthStateChange((event) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    document.getElementById('login').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    showPanel('newpw');
+  }
+});
 async function doLogin(){
-  const btn = document.getElementById("loginbtn");
-  const err = document.getElementById("loginerr");
-  err.style.display = "none";
-  btn.disabled = true; btn.textContent = "Anmelden…";
+  const t = T();
+  const btn = document.getElementById('loginbtn');
+  const err = document.getElementById('loginerr');
+  err.style.display = 'none';
+  btn.disabled = true; btn.textContent = t.signingIn;
   const { error } = await sb.auth.signInWithPassword({
-    email: document.getElementById("mail").value.trim(),
-    password: document.getElementById("pw").value,
+    email: document.getElementById('mail').value.trim(),
+    password: document.getElementById('pw').value,
   });
   if (error) {
-    err.textContent = "Anmeldung fehlgeschlagen – E-Mail oder Passwort ist nicht korrekt.";
-    err.style.display = "block";
-    btn.disabled = false; btn.textContent = "Anmelden";
+    err.textContent = t.loginErr; err.style.display = 'block';
+    btn.disabled = false; btn.textContent = t.signIn;
     return;
   }
   await enterApp();
-  btn.disabled = false; btn.textContent = "Anmelden";
+  btn.disabled = false; btn.textContent = t.signIn;
+}
+async function doForgot(){
+  const t = T();
+  const btn = document.getElementById('forgotbtn');
+  const err = document.getElementById('forgoterr');
+  const ok  = document.getElementById('forgotok');
+  err.style.display = 'none'; ok.style.display = 'none';
+  const email = document.getElementById('mail2').value.trim();
+  if (!email) { err.textContent = t.forgotErr; err.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = t.sending;
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + window.location.pathname,
+  });
+  btn.disabled = false; btn.textContent = t.sendLink;
+  if (error) { err.textContent = t.forgotErr; err.style.display = 'block'; return; }
+  ok.textContent = t.forgotOk; ok.style.display = 'block';
+}
+async function doNewPassword(){
+  const t = T();
+  const btn = document.getElementById('newpwbtn');
+  const err = document.getElementById('newpwerr');
+  err.style.display = 'none';
+  const p1 = document.getElementById('npw1').value, p2 = document.getElementById('npw2').value;
+  if (p1.length < 8) { err.textContent = t.pwShort; err.style.display = 'block'; return; }
+  if (p1 !== p2) { err.textContent = t.pwMismatch; err.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = t.saving;
+  const { error } = await sb.auth.updateUser({ password: p1 });
+  btn.disabled = false; btn.textContent = t.saveSignIn;
+  if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
+  toast(t.pwUpdated);
+  await enterApp();
 }
 async function doLogout(){ await sb.auth.signOut(); location.reload(); }
-document.getElementById("pw").addEventListener("keydown", e => { if(e.key === "Enter") doLogin(); });
+document.getElementById('pw').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+document.getElementById('mail2').addEventListener('keydown', e => { if(e.key === 'Enter') doForgot(); });
+document.getElementById('npw2').addEventListener('keydown', e => { if(e.key === 'Enter') doNewPassword(); });
 
 /* ================= Daten laden ================= */
 async function enterApp(){
   const [wRes, eRes, uRes] = await Promise.all([
-    sb.from("webinars").select("*").order("id"),
-    sb.from("events").select("*").order("ts", { ascending: false }).limit(8),
+    sb.from('webinars').select('*').order('id'),
+    sb.from('events').select('*').order('ts', { ascending: false }).limit(8),
     sb.auth.getUser(),
   ]);
   if (wRes.error || !wRes.data || wRes.data.length < 2) {
-    const err = document.getElementById("loginerr");
-    err.textContent = "Angemeldet, aber Daten konnten nicht geladen werden. Ist das SQL-Setup gelaufen?";
-    err.style.display = "block";
+    const err = document.getElementById('loginerr');
+    err.textContent = T().dataErr; err.style.display = 'block';
+    showPanel('login');
     return;
   }
   W1 = wRes.data[0]; W2 = wRes.data[1];
   TS2 = W2.reg_timeline || [];
   EVENTS = eRes.data || [];
-  buildKpis();
 
-  const email = uRes.data?.user?.email || "team";
-  const name = email.split("@")[0];
-  document.getElementById("user-ini").textContent = name.slice(0,2).toUpperCase();
-  document.getElementById("user-name").textContent = name.charAt(0).toUpperCase() + name.slice(1);
-  document.getElementById("user-mail").textContent = email;
-  document.getElementById("greeting").innerHTML = `Hallo, ${name.charAt(0).toUpperCase() + name.slice(1)} &#128075;`;
-  document.getElementById("leg1").textContent = W1.name + (W1.event_date ? ` (${fmtDate(W1.event_date)})` : "");
-  document.getElementById("leg2").textContent = W2.name + (W2.event_date ? ` (${fmtDate(W2.event_date)})` : "");
+  const email = (uRes.data && uRes.data.user && uRes.data.user.email) || 'team';
+  const name = email.split('@')[0];
+  document.getElementById('user-ini').textContent = name.slice(0,2).toUpperCase();
+  document.getElementById('user-name').textContent = name.charAt(0).toUpperCase() + name.slice(1);
+  document.getElementById('user-mail').textContent = email;
+  window._userName = name.charAt(0).toUpperCase() + name.slice(1);
 
-  document.getElementById("login").style.display = "none";
-  document.getElementById("app").style.display = "block";
+  loggedIn = true;
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  translate();
   renderAll();
 }
-function fmtDate(d){ const x = new Date(d); return x.toLocaleDateString("de-DE"); }
+function fmtDate(d){ const x = new Date(d); return x.toLocaleDateString(LOC()); }
 function fmtTs(ts){
   const d = new Date(ts), now = new Date();
-  const hm = d.toLocaleTimeString("de-DE", {hour:"2-digit", minute:"2-digit"});
-  return d.toDateString() === now.toDateString() ? `heute, ${hm}` : `${d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})}, ${hm}`;
+  const hm = d.toLocaleTimeString(LOC(), {hour:'2-digit', minute:'2-digit'});
+  return d.toDateString() === now.toDateString() ? `${T().today}, ${hm}` : `${d.toLocaleDateString(LOC(),{day:'2-digit',month:'2-digit'})}, ${hm}`;
 }
 
-function buildKpis(){
-  KPI = [
-    { label:"Typeform-Eintragungen", value: fmt(W2.typeform), d: dpct(W2.typeform, W1.typeform),
-      spark:[30,34,31,38,40,44,43,49,52,55,58,62],
-      tip:"Wie viele Menschen das Typeform-Formular ausgefüllt haben – der Startpunkt des Funnels. Vergleich: Webinar #2 vs. #1." },
-    { label:"Show-Rate", value: pctS(W2.show, W2.regs), d: dpct(pct(W2.show,W2.regs), pct(W1.show,W1.regs)),
-      spark:[40,42,41,44,43,46,45,47,48,47,49,50],
-      tip:`Anteil der Angemeldeten, die wirklich live im Webinar waren. ${fmt(W2.show)} von ${fmt(W2.regs)} Angemeldeten.` },
-    { label:"Coaching-Käufe", value: fmt(W2.coaching), d: dpct(W2.coaching, W1.coaching),
-      spark:[10,12,11,14,15,14,17,18,20,22,24,26],
-      tip:"Teilnehmer, die nach dem Strategiegespräch das Coaching gekauft haben (Stripe/GHL)." },
-    { label:"Umsatz", value: fmtE(W2.revenue), d: dpct(W2.revenue, W1.revenue),
-      spark:[55,60,58,66,72,70,79,86,92,101,118,145],
-      tip:"Gesamtumsatz aus Coaching- und Upsell-Käufen von Webinar #2." },
+/* ================= Render ================= */
+function kpiTiles(){
+  const t = T();
+  const items = [
+    { label:t.kpiTypeform, value: fmt(W2.typeform), d: dpct(W2.typeform, W1.typeform), spark:[30,34,31,38,40,44,43,49,52,55,58,62], tip:t.tipTypeform },
+    { label:t.kpiShow, value: pctS(W2.show, W2.regs), d: dpct(pct(W2.show,W2.regs), pct(W1.show,W1.regs)), spark:[40,42,41,44,43,46,45,47,48,47,49,50], tip:t.tipShow(fmt(W2.show), fmt(W2.regs)) },
+    { label:t.kpiCoaching, value: fmt(W2.coaching), d: dpct(W2.coaching, W1.coaching), spark:[10,12,11,14,15,14,17,18,20,22,24,26], tip:t.tipCoaching },
+    { label:t.kpiRevenue, value: fmtE(W2.revenue), d: dpct(W2.revenue, W1.revenue), spark:[55,60,58,66,72,70,79,86,92,101,118,145], tip:t.tipRevenue },
   ];
+  document.getElementById('kpis').innerHTML = items.map(k => {
+    const up = k.d >= 0;
+    return `<div class="tile">
+      <div class="label">${k.label}<i class="info" data-tip="${k.tip.replace(/"/g,'&quot;')}">i</i></div>
+      <div class="row"><span class="value">${k.value}</span>${spark(k.spark, up)}</div>
+      <div class="delta ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(k.d).toLocaleString(LOC(),{maximumFractionDigits:1})} % ${t.vs} ${W1.name}</div>
+    </div>`;
+  }).join('');
+  attachTips();
 }
-
-/* ================= Navigation ================= */
-document.querySelectorAll(".nav-item[data-page]").forEach(b => {
-  if (!b.dataset.page) return;
-  b.addEventListener("click", () => {
-    document.querySelectorAll(".nav-item").forEach(x => x.classList.remove("active"));
-    b.classList.add("active");
-    const pg = b.dataset.page;
-    document.getElementById("page-overview").style.display = pg === "overview" ? "block" : "none";
-    document.getElementById("page-funnel").style.display   = pg === "funnel"   ? "block" : "none";
-    document.getElementById("crumbs").innerHTML = pg === "overview"
-      ? "Übersicht &nbsp;/&nbsp; <b>Dashboard</b>"
-      : "Analyse &nbsp;/&nbsp; <b>Funnel &amp; Vergleich</b>";
-    if (pg === "funnel") { funnel(); table(); }
-  });
-});
-document.querySelectorAll("#viewseg button").forEach(b => {
-  b.addEventListener("click", () => {
-    document.querySelectorAll("#viewseg button").forEach(x => x.classList.remove("active"));
-    b.classList.add("active");
-    view = b.dataset.view;
-    funnel(); table();
-  });
-});
-
-/* ================= KPI + Sparklines ================= */
 function spark(data, good){
   const w = 76, h = 30, max = Math.max(...data), min = Math.min(...data);
   const x = i => 2 + (w-4) * i / (data.length-1);
   const y = v => 2 + (h-4) * (1 - (v - min) / ((max - min) || 1));
-  const pts = data.map((v,i) => `${x(i)},${y(v)}`).join(" ");
+  const pts = data.map((v,i) => `${x(i)},${y(v)}`).join(' ');
   const col = good ? css('--series-2') : css('--delta-bad');
   return `<svg width="${w}" height="${h}" aria-hidden="true">
     <polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>
   </svg>`;
 }
-function kpiTiles(){
-  document.getElementById("kpis").innerHTML = KPI.map(k => {
-    const up = k.d >= 0;
-    return `<div class="tile">
-      <div class="label">${k.label}<i class="info" data-tip="${k.tip.replace(/"/g,'&quot;')}">i</i></div>
-      <div class="row"><span class="value">${k.value}</span>${spark(k.spark, up)}</div>
-      <div class="delta ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(k.d).toLocaleString("de-DE",{maximumFractionDigits:1})} % vs. ${W1.name}</div>
-    </div>`;
-  }).join("");
-  attachTips();
-}
 
-/* ================= Big bar chart ================= */
 function bigchart(){
-  const el = document.getElementById("bigchart");
-  if (!TS2.length) { el.innerHTML = ""; return; }
+  const t = T();
+  const el = document.getElementById('bigchart');
+  if (!TS2.length) { el.innerHTML = ''; return; }
   const n = TS2.length;
   const maxY = Math.max(10, Math.ceil(Math.max(...TS2) / 10) * 10);
   const hiIdx = TS2.indexOf(Math.max(...TS2));
-  let grid = "";
+  let grid = '';
   for (let g = 0; g <= maxY; g += 10) {
     const top = (1 - g/maxY) * 100;
     grid += `<i style="top:${top}%"></i><label style="top:${top}%">${g}</label>`;
   }
   const bars = TS2.map((v,i) => {
     const day = i - (n - 1);
-    const lab = day === 0 ? "Webinar-Tag" : `${Math.abs(day)} Tage vorher`;
-    return `<div class="bcol ${i===hiIdx?'hl':''}" data-tip="<b>${lab}</b><br><b>${v}</b> Anmeldungen">
-      <i style="height:${100*v/maxY}%"></i>
+    const lab = day === 0 ? t.webinarDay : t.daysBefore(Math.abs(day));
+    return `<div class="bcol ${i===hiIdx?'hl':''}" data-tip="<b>${lab}</b><br><b>${v}</b> ${t.regs}">
+      <i style="height:0%" data-h="${100*v/maxY}"></i>
     </div>`;
-  }).join("");
+  }).join('');
   const xlab = TS2.map((v,i) => {
     const day = i - (n - 1);
-    return `<span>${(i%2===1) ? (day===0 ? "Tag 0" : day) : ""}</span>`;
-  }).join("");
+    return `<span>${(i%2===1) ? (day===0 ? t.dayZero : day) : ''}</span>`;
+  }).join('');
   el.innerHTML = `
     <div class="gridlines">${grid}</div>
     <div class="bars">${bars}</div>
     <div class="hline"></div>
     <div class="xlab">${xlab}</div>`;
   requestAnimationFrame(() => {
-    const chart = el.getBoundingClientRect();
-    const hlEl = el.querySelector(".bcol.hl i");
-    if (!hlEl) return;
-    const hl = hlEl.getBoundingClientRect();
-    const line = el.querySelector(".hline");
-    line.style.top = (hl.top - chart.top) + "px";
-    const badge = document.createElement("div");
-    badge.className = "hbadge";
-    const day = hiIdx - (n - 1);
-    badge.textContent = `${day === 0 ? "Tag 0" : "Tag " + day} · ${TS2[hiIdx]}`;
-    badge.style.left = (hl.left - chart.left + hl.width/2) + "px";
-    badge.style.top = (hl.top - chart.top) + "px";
-    el.appendChild(badge);
+    el.querySelectorAll('.bcol i').forEach(b => b.style.height = b.dataset.h + '%');
+    setTimeout(() => {
+      const chart = el.getBoundingClientRect();
+      const hlEl = el.querySelector('.bcol.hl i');
+      if (!hlEl) return;
+      const hl = hlEl.getBoundingClientRect();
+      const line = el.querySelector('.hline');
+      line.style.top = (hl.top - chart.top) + 'px';
+      line.style.opacity = 1;
+      const badge = document.createElement('div');
+      badge.className = 'hbadge';
+      const day = hiIdx - (n - 1);
+      badge.textContent = `${day === 0 ? t.dayZero : t.day + ' ' + day} · ${TS2[hiIdx]}`;
+      badge.style.left = (hl.left - chart.left + hl.width/2) + 'px';
+      badge.style.top = (hl.top - chart.top) + 'px';
+      el.appendChild(badge);
+      requestAnimationFrame(() => badge.style.opacity = 1);
+    }, 620);
   });
   attachTips();
 }
 
-/* ================= Feed & Events ================= */
-const KIND_ICON = { lead:"&#128100;", show:"&#127909;", sync:"&#128257;", call:"&#128197;", upsell:"&#128176;", coaching:"&#128176;" };
-const KIND_DOT  = k => (k === "upsell" || k === "coaching") ? css('--mint')
-                    : (k === "call" || k === "show") ? css('--cyan')
+const KIND_ICON = { lead:'&#128100;', show:'&#127909;', sync:'&#128257;', call:'&#128197;', upsell:'&#128176;', coaching:'&#128176;' };
+const KIND_DOT  = k => (k === 'upsell' || k === 'coaching') ? css('--mint')
+                    : (k === 'call' || k === 'show') ? css('--cyan')
                     : css('--baseline');
+const kindLabel = e => T().kinds[e.kind] || e.label;
 function feed(){
-  document.getElementById("feed-count").textContent = `${EVENTS.length} letzte Ereignisse`;
-  document.getElementById("feed").innerHTML = EVENTS.slice(0, 6).map(f => {
-    const sub = [f.contact, f.amount ? fmtE(f.amount) : null, f.source].filter(Boolean).join(" · ");
-    return `<div class="fitem"><span class="fic">${KIND_ICON[f.kind] || "&#9679;"}</span><span><span class="ft">${f.label}</span><br><span class="fs">${sub || "–"}</span></span><span class="tm">${fmtTs(f.ts)}</span></div>`;
-  }).join("");
+  document.getElementById('feed-count').textContent = T().feedCount(EVENTS.length);
+  document.getElementById('feed').innerHTML = EVENTS.slice(0, 6).map(f => {
+    const sub = [f.contact, f.amount ? fmtE(f.amount) : null, f.source].filter(Boolean).join(' · ');
+    return `<div class="fitem"><span class="fic">${KIND_ICON[f.kind] || '&#9679;'}</span><span><span class="ft">${kindLabel(f)}</span><br><span class="fs">${sub || '–'}</span></span><span class="tm">${fmtTs(f.ts)}</span></div>`;
+  }).join('');
 }
 function events(){
-  document.getElementById("events").innerHTML = EVENTS.filter(e => e.kind !== "sync").map(e => `
+  document.getElementById('events').innerHTML = EVENTS.filter(e => e.kind !== 'sync').map(e => `
     <tr>
-      <td><span class="who"><span class="avatar" style="width:28px;height:28px;font-size:11px">${e.initials || "··"}</span>${e.contact || "–"}</span></td>
-      <td><span class="badge"><span class="b-dot" style="background:${KIND_DOT(e.kind)}"></span>${e.label}</span></td>
-      <td>${e.webinar || "–"}</td>
-      <td>${e.source || "–"}</td>
+      <td><span class="who"><span class="avatar" style="width:28px;height:28px;font-size:11px">${e.initials || '··'}</span>${e.contact || '–'}</span></td>
+      <td><span class="badge"><span class="b-dot" style="background:${KIND_DOT(e.kind)}"></span>${kindLabel(e)}</span></td>
+      <td>${e.webinar || '–'}</td>
+      <td>${e.source || '–'}</td>
       <td>${fmtTs(e.ts)}</td>
-      <td class="r">${e.amount ? fmtE(e.amount) : "–"}</td>
-    </tr>`).join("");
+      <td class="r">${e.amount ? fmtE(e.amount) : '–'}</td>
+    </tr>`).join('');
 }
+
+/* ================= Navigation ================= */
+document.querySelectorAll('.nav-item[data-page]').forEach(b => {
+  if (!b.dataset.page) return;
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    const pg = b.dataset.page;
+    document.getElementById('page-overview').style.display = pg === 'overview' ? 'block' : 'none';
+    document.getElementById('page-funnel').style.display   = pg === 'funnel'   ? 'block' : 'none';
+    setHtml('crumbs', pg === 'overview' ? T().crumbsOverview : T().crumbsFunnel);
+    if (pg === 'funnel') { funnel(); table(); }
+  });
+});
+document.querySelectorAll('#viewseg button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#viewseg button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    view = b.dataset.view;
+    funnel(); table();
+  });
+});
 
 /* ================= Funnel ================= */
 function funnel(){
-  const el = document.getElementById("funnel");
-  const legend = document.getElementById("funnel-legend");
-  const title = document.getElementById("funnel-title");
+  const t = T();
+  const el = document.getElementById('funnel');
+  const legend = document.getElementById('funnel-legend');
+  const title = document.getElementById('funnel-title');
   const max = Math.max(W1.typeform, W2.typeform);
-  const series = view === "w1" ? [[W1.name, W1, "--series-1"]]
-               : view === "w2" ? [[W2.name, W2, "--series-2"]]
-               : [[W1.name, W1, "--series-1"], [W2.name, W2, "--series-2"]];
-  legend.style.display = series.length > 1 ? "flex" : "none";
-  title.textContent = series.length > 1 ? "Der Funnel" : "Der Funnel – " + series[0][0];
+  const series = view === 'w1' ? [[W1.name, W1, '--series-1']]
+               : view === 'w2' ? [[W2.name, W2, '--series-2']]
+               : [[W1.name, W1, '--series-1'], [W2.name, W2, '--series-2']];
+  legend.style.display = series.length > 1 ? 'flex' : 'none';
+  document.getElementById('leg1').textContent = W1.name + (W1.event_date ? ` (${fmtDate(W1.event_date)})` : '');
+  document.getElementById('leg2').textContent = W2.name + (W2.event_date ? ` (${fmtDate(W2.event_date)})` : '');
+  title.textContent = series.length > 1 ? t.funnelTitle : t.funnelTitleOne(series[0][0]);
 
-  el.innerHTML = STAGES.map((st, i) => {
-    const rows = series.map(([name, D, col]) => {
-      const v = D[st.key];
-      const prev = i > 0 ? D[STAGES[i-1].key] : null;
-      const convPrev = prev ? pctS(v, prev) : "–";
-      const convStart = pctS(v, D[STAGES[0].key]);
+  el.innerHTML = STAGE_KEYS.map((key, i) => {
+    const pair = t.stages[key];
+    const sname = pair[0], sdesc = pair[1];
+    const rows = series.map(s => {
+      const name = s[0], D = s[1], col = s[2];
+      const v = D[key];
+      const prev = i > 0 ? D[STAGE_KEYS[i-1]] : null;
+      const convPrev = prev ? pctS(v, prev) : '–';
+      const convStart = pctS(v, D[STAGE_KEYS[0]]);
       const w = Math.max(0.6, 100 * v / max);
-      const numTxt = i > 0 ? `<b>${fmt(v)}</b> · ${convPrev} der Vorstufe` : `<b>${fmt(v)}</b> Personen`;
+      const numTxt = i > 0 ? `<b>${fmt(v)}</b> · ${convPrev} ${t.ofPrev}` : `<b>${fmt(v)}</b> ${t.persons}`;
       return `<div class="barrow">
         <div class="bartrack">
-          <div class="fbar" style="width:${w}%; background:var(${col})"
-            data-tip="<b>${name} · ${st.name}</b><br>${fmt(v)} Personen${prev ? `<br>${convPrev} der vorherigen Stufe (${fmt(prev)})` : ""}<br>${convStart} aller Eintragungen"></div>
+          <div class="fbar" style="width:0%" data-w="${w}" data-col="${col}"
+            data-tip="<b>${name} · ${sname}</b><br>${fmt(v)} ${t.persons}${prev ? `<br>${convPrev} ${t.ofPrevLong} (${fmt(prev)})` : ''}<br>${convStart} ${t.ofAll}"></div>
         </div>
         <div class="num">${numTxt}</div>
       </div>`;
-    }).join("");
+    }).join('');
     return `<div class="stage">
-      <b class="sname">${i+1}. ${st.name}</b>
-      <div class="stage-desc">${st.desc}</div>
+      <b class="sname">${i+1}. ${sname}</b>
+      <div class="stage-desc">${sdesc}</div>
       ${rows}
     </div>`;
-  }).join("");
+  }).join('');
+  requestAnimationFrame(() => {
+    el.querySelectorAll('.fbar').forEach(b => {
+      b.style.background = `var(${b.dataset.col})`;
+      b.style.width = b.dataset.w + '%';
+    });
+  });
   attachTips();
 }
 function table(){
-  const t = document.getElementById("tbl");
-  let rows = `<thead><tr><th>Stufe</th><th class="r">${W1.name}</th><th class="r">Conversion</th><th class="r">${W2.name}</th><th class="r">Conversion</th></tr></thead><tbody>`;
-  STAGES.forEach((st, i) => {
-    const p1 = i ? pct(W1[st.key], W1[STAGES[i-1].key]) : null;
-    const p2 = i ? pct(W2[st.key], W2[STAGES[i-1].key]) : null;
+  const t = T();
+  const tbl = document.getElementById('tbl');
+  let rows = `<thead><tr><th>${t.thStage}</th><th class="r">${W1.name}</th><th class="r">${t.thConv}</th><th class="r">${W2.name}</th><th class="r">${t.thConv}</th></tr></thead><tbody>`;
+  STAGE_KEYS.forEach((key, i) => {
+    const p1 = i ? pct(W1[key], W1[STAGE_KEYS[i-1]]) : null;
+    const p2 = i ? pct(W2[key], W2[STAGE_KEYS[i-1]]) : null;
     const b1 = p1 !== null && p1 > p2, b2 = p2 !== null && p2 > p1;
-    rows += `<tr><td>${st.name}</td>
-      <td class="r">${fmt(W1[st.key])}</td><td class="r ${b1?'better':''}">${p1===null?"–":pctS(W1[st.key], W1[STAGES[i-1].key])}</td>
-      <td class="r">${fmt(W2[st.key])}</td><td class="r ${b2?'better':''}">${p2===null?"–":pctS(W2[st.key], W2[STAGES[i-1].key])}</td></tr>`;
+    rows += `<tr><td>${t.stages[key][0]}</td>
+      <td class="r">${fmt(W1[key])}</td><td class="r ${b1?'better':''}">${p1===null?'–':pctS(W1[key], W1[STAGE_KEYS[i-1]])}</td>
+      <td class="r">${fmt(W2[key])}</td><td class="r ${b2?'better':''}">${p2===null?'–':pctS(W2[key], W2[STAGE_KEYS[i-1]])}</td></tr>`;
   });
-  rows += `<tr><td><b>Umsatz gesamt</b></td><td class="r"><b>${fmtE(W1.revenue)}</b></td><td></td><td class="r better"><b>${fmtE(W2.revenue)}</b></td><td></td></tr></tbody>`;
-  t.innerHTML = rows;
+  rows += `<tr><td><b>${t.totalRevenue}</b></td><td class="r"><b>${fmtE(W1.revenue)}</b></td><td></td><td class="r better"><b>${fmtE(W2.revenue)}</b></td><td></td></tr></tbody>`;
+  tbl.innerHTML = rows;
 }
 
 /* ================= Tooltip ================= */
-const tip = document.getElementById("tooltip");
+const tip = document.getElementById('tooltip');
 function attachTips(){
-  document.querySelectorAll("[data-tip]").forEach(n => {
+  document.querySelectorAll('[data-tip]').forEach(n => {
     if (n.dataset.tipBound) return;
-    n.dataset.tipBound = "1";
+    n.dataset.tipBound = '1';
     const show = e => {
       tip.innerHTML = n.dataset.tip;
-      tip.style.display = "block";
+      tip.style.display = 'block';
       const pad = 14;
       let x = e.clientX + pad, y = e.clientY + pad;
       const r = tip.getBoundingClientRect();
       if (x + r.width  > window.innerWidth  - 8) x = e.clientX - r.width  - pad;
       if (y + r.height > window.innerHeight - 8) y = e.clientY - r.height - pad;
-      tip.style.left = x + "px"; tip.style.top = y + "px";
+      tip.style.left = x + 'px'; tip.style.top = y + 'px';
     };
-    n.addEventListener("mousemove", show);
-    n.addEventListener("click", show);
-    n.addEventListener("mouseleave", () => tip.style.display = "none");
+    n.addEventListener('mousemove', show);
+    n.addEventListener('click', show);
+    n.addEventListener('mouseleave', () => tip.style.display = 'none');
   });
 }
-document.addEventListener("click", e => { if (!e.target.closest("[data-tip]")) tip.style.display = "none"; });
+document.addEventListener('click', e => { if (!e.target.closest('[data-tip]')) tip.style.display = 'none'; });
 
-function renderAll(){ kpiTiles(); bigchart(); feed(); events(); funnel(); table(); }
-window.addEventListener("resize", () => { if (document.getElementById("app").style.display === "block") bigchart(); });
+function renderAll(){
+  const t = T();
+  setHtml('greeting', `${t.hello}, ${window._userName || ''} &#128075;`);
+  kpiTiles(); bigchart(); feed(); events(); funnel(); table();
+}
+window.addEventListener('resize', () => { if (loggedIn) bigchart(); });
 init();
 </script>
 </body>
