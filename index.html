@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Barry KDP – Webinar Tracking</title>
+<meta name="theme-color" content="#0A100E">
+<meta name="description" content="Internes Webinar-Tracking – Barry KDP">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234ADE80'/%3E%3Ctext x='32' y='45' font-family='Arial,sans-serif' font-size='38' font-weight='800' text-anchor='middle' fill='%2305130C'%3EB%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
@@ -251,7 +254,19 @@
   }
 
   .grid-main { display:grid; grid-template-columns: minmax(0, 1.9fr) minmax(280px, 1fr); gap: 14px; margin-bottom: 16px; }
-  @media (max-width: 980px) { .grid-main { grid-template-columns: 1fr; } .shell { grid-template-columns: 1fr; } aside { position: static; height:auto; } }
+  .burger { display:none; width:34px; height:34px; border:1px solid var(--border); border-radius:9px; background: rgba(255,255,255,0.05); color: var(--text-primary); cursor:pointer; align-items:center; justify-content:center; font-size:15px; flex:none; }
+  .navveil { display:none; position: fixed; inset:0; background: rgba(0,0,0,.55); z-index: 65; }
+  @media (max-width: 980px) {
+    .grid-main { grid-template-columns: 1fr; }
+    .shell { grid-template-columns: 1fr; }
+    aside { position: fixed; top:0; left:0; bottom:0; width: 272px; height: 100vh; transform: translateX(-105%); transition: transform .25s ease; z-index: 70; background: #101A16; }
+    body.nav-open aside { transform: none; }
+    body.nav-open .navveil { display:block; }
+    .burger { display:inline-flex; }
+    main { padding: 0 16px 40px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  .upd { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
 
   .bigchart { position: relative; height: 260px; margin-top: 8px; }
   .gridlines { position:absolute; inset: 0 0 26px 34px; }
@@ -464,12 +479,17 @@
       </div>
     </aside>
 
+    <div class="navveil" onclick="document.body.classList.remove('nav-open')"></div>
     <main>
       <div class="topbar">
-        <div class="crumbs" id="crumbs"></div>
+        <div style="display:flex;align-items:center;gap:12px;min-width:0">
+          <button class="burger" onclick="document.body.classList.toggle('nav-open')">&#9776;</button>
+          <div class="crumbs" id="crumbs"></div>
+        </div>
         <div class="toggles">
+          <span class="upd" id="upd"></span>
+          <button class="thm" onclick="manualRefresh()" title="Refresh">&#8635;</button>
           <span class="lang"><button id="lang-de" onclick="setLang('de')">DE</button><button id="lang-en" onclick="setLang('en')">EN</button></span>
-          
         </div>
       </div>
 
@@ -734,6 +754,8 @@ const I18N = {
     setSysH2: 'System', setSys: 'Dashboard: Vercel · Datenbank & Login: Supabase (EU) · Datenfluss: Make.<br>Design: Dark · Neon-Grün · Version 2.0',
     qEyebrow: 'Suche', qTitle: 'Suche', qHint: 'Tippe oben links ins Suchfeld (⌘K) – durchsucht Kontakte, Ereignisse, Webinare und Quellen.',
     qFor: n => `Treffer für „${n}“`, qNone: n => `Keine Treffer für „${n}“`,
+    updatedAt: n => `Aktualisiert ${n}`, refreshed: 'Daten aktualisiert',
+    emptyList: 'Noch keine Ereignisse – sie erscheinen hier automatisch, sobald die Make-Anbindung live ist.',
     langToast: 'Sprache: Deutsch',
   },
   en: {
@@ -821,6 +843,8 @@ const I18N = {
     setSysH2: 'System', setSys: 'Dashboard: Vercel · Database & login: Supabase (EU) · Data flow: Make.<br>Design: dark · neon green · version 2.0',
     qEyebrow: 'Search', qTitle: 'Search', qHint: 'Type into the search box top left (⌘K) – searches contacts, events, webinars and sources.',
     qFor: n => `Results for “${n}”`, qNone: n => `No results for “${n}”`,
+    updatedAt: n => `Updated ${n}`, refreshed: 'Data refreshed',
+    emptyList: 'No events yet – they will appear here automatically once the Make integration is live.',
     langToast: 'Language: English',
   },
 };
@@ -1013,6 +1037,23 @@ async function doNewPassword(){
   await enterApp();
 }
 async function doLogout(){ await sb.auth.signOut(); location.reload(); }
+let lastUpd = null;
+async function refreshData(silent){
+  try {
+    const [wRes, eRes] = await Promise.all([
+      sb.from('webinars').select('*').order('id'),
+      sb.from('events').select('*').order('ts', { ascending: false }).limit(200),
+    ]);
+    if (!wRes.error && wRes.data && wRes.data.length >= 2) { W1 = wRes.data[0]; W2 = wRes.data[1]; TS2 = W2.reg_timeline || []; }
+    if (!eRes.error && eRes.data) EVENTS = eRes.data;
+    lastUpd = new Date();
+    setHtml('upd', T().updatedAt(lastUpd.toLocaleTimeString(LOC(), {hour:'2-digit', minute:'2-digit'})));
+    renderAll();
+    if (!silent) toast(T().refreshed);
+  } catch(e) {}
+}
+function manualRefresh(){ if (loggedIn) refreshData(false); }
+setInterval(() => { if (loggedIn) refreshData(true); }, 60000);
 document.getElementById('pw').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
 document.getElementById('mail2').addEventListener('keydown', e => { if(e.key === 'Enter') doForgot(); });
 document.getElementById('npw2').addEventListener('keydown', e => { if(e.key === 'Enter') doNewPassword(); });
@@ -1043,6 +1084,8 @@ async function enterApp(){
   window._userEmail = email;
 
   loggedIn = true;
+  lastUpd = new Date();
+  setHtml('upd', T().updatedAt(lastUpd.toLocaleTimeString(LOC(), {hour:'2-digit', minute:'2-digit'})));
   document.getElementById('login').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   translate();
@@ -1170,6 +1213,7 @@ function crumbFor(pg){
 }
 function showPage(pg){
   curPage = pg;
+  document.body.classList.remove('nav-open');
   PAGES.forEach(p => { const el = document.getElementById('page-'+p); if (el) el.style.display = p===pg ? 'block' : 'none'; });
   document.querySelectorAll('.nav-item').forEach(x => x.classList.toggle('active', x.dataset.page === pg));
   setHtml('crumbs', crumbFor(pg));
@@ -1223,7 +1267,8 @@ function evRow(e){
 function evTable(list, id){
   const t = T();
   const el = document.getElementById(id);
-  el.innerHTML = '<thead><tr><th>' + t.thContact + '</th><th>' + t.thEvent + '</th><th>Webinar</th><th>' + t.thSource + '</th><th>' + t.thWhen + '</th><th class="r">' + t.thAmount + '</th></tr></thead><tbody>' + list.map(evRow).join('') + '</tbody>';
+  const body = list.length ? list.map(evRow).join('') : '<tr><td colspan="6" style="color:var(--text-muted);padding:18px 12px;white-space:normal">' + t.emptyList + '</td></tr>';
+  el.innerHTML = '<thead><tr><th>' + t.thContact + '</th><th>' + t.thEvent + '</th><th>Webinar</th><th>' + t.thSource + '</th><th>' + t.thWhen + '</th><th class="r">' + t.thAmount + '</th></tr></thead><tbody>' + body + '</tbody>';
 }
 function miniTile(label, value){
   return '<div class="tile"><div class="label">' + label + '</div><div class="row"><span class="value">' + value + '</span></div></div>';
