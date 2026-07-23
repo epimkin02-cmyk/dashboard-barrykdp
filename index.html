@@ -9,80 +9,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <script src="./supabase.js"></script>
 <style>
-  :root { color-scheme: light dark; }
+  :root { color-scheme: dark; }
   .viz-root {
-    color-scheme: light;
-    --page:           #FAF6EE;
-    --surface-1:      #FFFEFA;
-    --text-primary:   #241D15;
-    --text-secondary: #57493A;
-    --text-muted:     #8A7B66;
-    --grid:           #ECE3D2;
-    --baseline:       #E4D7BE;
-    --border:         rgba(36,29,21,0.08);
-    --series-1:       #E87A1E;
-    --series-2:       #14B8A6;
-    --petrol:         #E87A1E;
-    --petrol-soft:    #EE9A54;
-    --petrol-deep:    #A03C00;
-    --teal-deep:      #134E4A;
-    --mint:           #34D399;
-    --cyan:           #22D3EE;
-    --delta-good:     #0E7C5B;
-    --delta-bad:      #A03C00;
-    --bar-dim:        #E4D7BE;
-    --hover:          rgba(36,29,21,0.04);
-    --glass-bg:       rgba(255,255,255,0.55);
-    --glass-border:   rgba(255,255,255,0.70);
-    --glass-shadow:   0 16px 40px -16px rgba(36,29,21,0.28);
-    --glow-1:         rgba(232,122,30,0.16);
-    --glow-2:         rgba(238,154,84,0.14);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) .viz-root {
-      color-scheme: dark;
-      --page:           #1C1610;
-      --surface-1:      #241D15;
-      --text-primary:   #FAF6EE;
-      --text-secondary: #D8CDBC;
-      --text-muted:     #8A7B66;
-      --grid:           #3A3128;
-      --baseline:       #4A3F33;
-      --border:         rgba(250,246,238,0.09);
-      --series-1:       #D96E12;
-      --series-2:       #0F9C8D;
-      --delta-good:     #34D399;
-      --delta-bad:      #EE9A54;
-      --bar-dim:        #3A3128;
-      --hover:          rgba(250,246,238,0.05);
-      --glass-bg:       rgba(255,255,255,0.07);
-      --glass-border:   rgba(255,255,255,0.16);
-      --glass-shadow:   0 16px 40px -16px rgba(0,0,0,0.55);
-      --glow-1:         rgba(232,122,30,0.14);
-      --glow-2:         rgba(238,154,84,0.10);
-    }
-  }
-  :root[data-theme="dark"] .viz-root {
     color-scheme: dark;
-    --page:           #1C1610;
-    --surface-1:      #241D15;
-    --text-primary:   #FAF6EE;
-    --text-secondary: #D8CDBC;
-    --text-muted:     #8A7B66;
-    --grid:           #3A3128;
-    --baseline:       #4A3F33;
-    --border:         rgba(250,246,238,0.09);
-    --series-1:       #D96E12;
-    --series-2:       #0F9C8D;
-    --delta-good:     #34D399;
-    --delta-bad:      #EE9A54;
-    --bar-dim:        #3A3128;
-    --hover:          rgba(250,246,238,0.05);
-    --glass-bg:       rgba(255,255,255,0.07);
-    --glass-border:   rgba(255,255,255,0.16);
-    --glass-shadow:   0 16px 40px -16px rgba(0,0,0,0.55);
-    --glow-1:         rgba(232,122,30,0.14);
-    --glow-2:         rgba(238,154,84,0.10);
+    /* Dark · Neon-Grün (Closify-inspiriert) */
+    --page:           #0A100E;
+    --surface-1:      #101A16;
+    --text-primary:   #F2F7F4;
+    --text-secondary: #BCCFC5;
+    --text-muted:     #7E948A;
+    --grid:           #1D2A24;
+    --baseline:       #2A3B33;
+    --border:         rgba(242,247,244,0.08);
+    --series-1:       #27A862;
+    --series-2:       #4C8FE0;
+    --petrol:         #4ADE80;   /* Neon-Grün Akzent */
+    --petrol-soft:    #86EFAC;
+    --petrol-deep:    #16A34A;
+    --teal-deep:      #0F2C21;
+    --mint:           #34D399;
+    --cyan:           #38BDF8;
+    --delta-good:     #4ADE80;
+    --delta-bad:      #F87171;
+    --bar-dim:        #22322B;
+    --hover:          rgba(242,247,244,0.05);
+    --glass-bg:       rgba(255,255,255,0.06);
+    --glass-border:   rgba(74,222,128,0.22);
+    --glass-shadow:   0 16px 40px -16px rgba(0,0,0,0.6), 0 0 32px -12px rgba(74,222,128,0.25);
+    --glow-1:         rgba(74,222,128,0.14);
+    --glow-2:         rgba(52,211,153,0.10);
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
@@ -137,9 +92,9 @@
   .lockup .mark {
     width: 34px; height: 34px; border-radius: 9px;
     background: linear-gradient(135deg, var(--petrol), var(--petrol-soft));
-    color: #FAF6EE; font-weight: 800; font-size: 16px;
+    color: #05130C; font-weight: 800; font-size: 16px;
     display:flex; align-items:center; justify-content:center;
-    box-shadow: 0 6px 16px -6px rgba(232,122,30,.55);
+    box-shadow: 0 6px 16px -6px rgba(74,222,128,.5);
   }
   .lockup .lt b { display:block; font-size: 14.5px; font-weight: 800; letter-spacing:-.01em; }
   .lockup .lt span { display:block; font-size: 8.5px; font-weight: 700; letter-spacing: .22em; color: var(--text-muted); margin-top: 1px; }
@@ -165,9 +120,9 @@
   .btn-primary {
     width: 100%; padding: 15px; border:none; border-radius: 999px;
     background: linear-gradient(135deg, var(--petrol), var(--petrol-soft));
-    color: #241D15; font-size: 12.5px; font-weight: 800;
+    color: #05130C; font-size: 12.5px; font-weight: 800;
     letter-spacing: .1em; text-transform: uppercase; cursor:pointer;
-    box-shadow: 0 12px 28px -10px rgba(232,122,30,.65);
+    box-shadow: 0 12px 28px -10px rgba(74,222,128,.55);
     transition: transform .15s, filter .15s;
   }
   .btn-primary:hover { filter: brightness(1.04); transform: translateY(-1px); }
@@ -207,7 +162,7 @@
   .avatar {
     width: 32px; height: 32px; border-radius: 50%; flex: none;
     background: linear-gradient(135deg, var(--petrol), var(--petrol-soft));
-    color:#FAF6EE; font-size: 12px; font-weight: 800;
+    color:#05130C; font-size: 12px; font-weight: 800;
     display:inline-flex; align-items:center; justify-content:center;
   }
   .promo-who b { color: var(--text-primary); display:block; font-size: 13px; font-weight: 800; }
@@ -297,7 +252,7 @@
   .bcol { flex:1; display:flex; align-items:flex-end; height: 100%; position: relative; cursor: default; }
   .bcol i { display:block; width: 100%; max-width: 34px; margin: 0 auto; background: var(--bar-dim); border-radius: 4px 4px 0 0; transition: height .6s cubic-bezier(.2,.7,.3,1), background .15s; }
   .bcol:hover i { background: var(--baseline); filter: brightness(.96); }
-  .bcol.hl i { background: linear-gradient(180deg, var(--petrol-soft), var(--petrol)); box-shadow: 0 10px 24px -10px rgba(232,122,30,.6); }
+  .bcol.hl i { background: linear-gradient(180deg, var(--petrol-soft), var(--petrol)); box-shadow: 0 10px 24px -10px rgba(74,222,128,.5); }
   .bcol.hl:hover i { filter: none; }
   .xlab { position:absolute; inset: auto 0 0 34px; display:flex; gap: 10px; padding: 0 6px; }
   .xlab span { flex:1; text-align:center; font-size: 11px; color: var(--text-muted); }
@@ -345,7 +300,7 @@
 
   .ctabar {
     margin-top: 16px; border-radius: 18px; padding: 22px 26px;
-    background: var(--teal-deep); color: #FAF6EE;
+    background: var(--teal-deep); color: #F2F7F4; border: 1px solid rgba(74,222,128,0.25);
     display:flex; align-items:center; justify-content:space-between; gap: 16px; flex-wrap: wrap;
   }
   .ctabar b { font-size: 15px; font-weight: 800; display:block; }
@@ -353,8 +308,8 @@
   .ctabar button {
     border:none; border-radius: 999px; padding: 12px 22px; cursor:pointer;
     background: linear-gradient(135deg, var(--petrol), var(--petrol-soft));
-    color: #241D15; font-size: 11.5px; font-weight: 800; letter-spacing:.1em; text-transform: uppercase;
-    box-shadow: 0 10px 26px -10px rgba(232,122,30,.7);
+    color: #05130C; font-size: 11.5px; font-weight: 800; letter-spacing:.1em; text-transform: uppercase;
+    box-shadow: 0 10px 26px -10px rgba(74,222,128,.55);
   }
 
   #tooltip {
@@ -384,7 +339,7 @@
   <div class="login-shell fade">
     <div class="login-toggles toggles">
       <span class="lang"><button id="lang-de-l" onclick="setLang('de')">DE</button><button id="lang-en-l" onclick="setLang('en')">EN</button></span>
-      <button class="thm" id="thm-l" onclick="toggleTheme()">&#9789;</button>
+      
     </div>
     <div class="login-form">
       <div class="lockup">
@@ -487,7 +442,7 @@
         <div class="crumbs" id="crumbs"></div>
         <div class="toggles">
           <span class="lang"><button id="lang-de" onclick="setLang('de')">DE</button><button id="lang-en" onclick="setLang('en')">EN</button></span>
-          <button class="thm" id="thm" onclick="toggleTheme()">&#9789;</button>
+          
         </div>
       </div>
 
@@ -759,7 +714,7 @@ function toggleTheme(){
   try { localStorage.setItem('barry-theme', next); } catch(e) {}
   if (loggedIn) renderAll();
 }
-try { const t0 = localStorage.getItem('barry-theme'); applyTheme(t0 || null); } catch(e) { applyTheme(null); }
+/* Dark-only: kein Theme-Toggle */
 
 /* ================= Sprache ================= */
 function setLang(l){
@@ -961,7 +916,7 @@ function spark(data, good){
   const x = i => 2 + (w-4) * i / (data.length-1);
   const y = v => 2 + (h-4) * (1 - (v - min) / ((max - min) || 1));
   const pts = data.map((v,i) => `${x(i)},${y(v)}`).join(' ');
-  const col = good ? css('--series-2') : css('--delta-bad');
+  const col = good ? css('--delta-good') : css('--delta-bad');
   return `<svg width="${w}" height="${h}" aria-hidden="true">
     <polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>
   </svg>`;
