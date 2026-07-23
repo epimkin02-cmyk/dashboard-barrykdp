@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barry KDP – Webinar Tracking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: light dark; }
+  .viz-root {
+    color-scheme: light;
+    /* Barry KDP CI – light (Cream) */
+    --page:           #FAF6EE;   /* Cream */
+    --surface-1:      #FFFEFA;
+    --text-primary:   #241D15;   /* Ink */
+    --text-secondary: #57493A;
+    --text-muted:     #8A7B66;   /* Gray */
+    --grid:           #ECE3D2;   /* Sand */
+    --baseline:       #E4D7BE;   /* Sand Deep */
+    --border:         rgba(36,29,21,0.08);
+    --series-1:       #E87A1E;   /* Petrol 500 – Webinar #1 */
+    --series-2:       #14B8A6;   /* Teal – Webinar #2 */
+    --petrol:         #E87A1E;
+    --petrol-soft:    #EE9A54;
+    --petrol-deep:    #A03C00;
+    --teal-deep:      #134E4A;
+    --mint:           #34D399;
+    --cyan:           #22D3EE;
+    --delta-good:     #0E7C5B;
+    --delta-bad:      #A03C00;
+    --bar-dim:        #E4D7BE;
+    --hover:          rgba(36,29,21,0.04);
+    --glass-bg:       rgba(255,255,255,0.55);
+    --glass-border:   rgba(255,255,255,0.70);
+    --glass-shadow:   0 16px 40px -16px rgba(36,29,21,0.28);
+    --glow-1:         rgba(232,122,30,0.16);
+    --glow-2:         rgba(238,154,84,0.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      /* Barry KDP CI – dark (Ink) */
+      --page:           #1C1610;
+      --surface-1:      #241D15;
+      --text-primary:   #FAF6EE;
+      --text-secondary: #D8CDBC;
+      --text-muted:     #8A7B66;
+      --grid:           #3A3128;
+      --baseline:       #4A3F33;
+      --border:         rgba(250,246,238,0.09);
+      --series-1:       #D96E12;
+      --series-2:       #0F9C8D;
+      --delta-good:     #34D399;
+      --delta-bad:      #EE9A54;
+      --bar-dim:        #3A3128;
+      --hover:          rgba(250,246,238,0.05);
+      --glass-bg:       rgba(255,255,255,0.07);
+      --glass-border:   rgba(255,255,255,0.16);
+      --glass-shadow:   0 16px 40px -16px rgba(0,0,0,0.55);
+      --glow-1:         rgba(232,122,30,0.14);
+      --glow-2:         rgba(238,154,84,0.10);
+    }
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Manrope', system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page); color: var(--text-primary);
+    font-size: 14px; min-height: 100vh;
+  }
+  button, input { font-family: inherit; }
+  .accent {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 500;
+    color: var(--petrol); letter-spacing: 0;
+  }
+  .eyebrow {
+    font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--petrol);
+  }
+  /* soft brand glows + grid backdrop */
+  .backdrop { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(480px 320px at 85% 8%,  var(--glow-1), transparent 70%),
+      radial-gradient(520px 360px at 10% 92%, var(--glow-2), transparent 70%),
+      repeating-linear-gradient(0deg,  transparent 0 95px, var(--border) 95px 96px),
+      repeating-linear-gradient(90deg, transparent 0 95px, var(--border) 95px 96px);
+  }
+
+  /* ================= LOGIN ================= */
+  #login {
+    position: fixed; inset: 0; z-index: 60; background: transparent;
+    display:flex; align-items:center; justify-content:center; padding: 20px;
+  }
+  .login-shell {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px;
+    display:grid; grid-template-columns: 1fr 1fr;
+    width: 980px; max-width: 100%; overflow: hidden;
+    box-shadow: 0 24px 70px -20px rgba(36,29,21,.25);
+    position: relative; z-index: 1;
+  }
+  .login-form { padding: 56px 52px; display:flex; flex-direction:column; justify-content:center; }
+  .lockup { display:flex; align-items:center; gap: 11px; }
+  .lockup .mark {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--petrol), var(--petrol-soft));
+    color: #FAF6EE; font-weight: 800; font-size: 16px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 6px 16px -6px rgba(232,122,30,.55);
+  }
+  .lockup .lt b { display:block; font-size: 14.5px; font-weight: 800; letter-spacing:-.01em; }
+  .lockup .lt span { display:block; font-size: 8.5px; font-weight: 700; letter-spacing: .22em; color: var(--text-muted); margin-top: 1px; }
+  .login-form .lockup { margin-bottom: 38px; }
+  .login-form h1 { font-size: 27px; font-weight: 800; letter-spacing: -.02em; text-align:center; margin-bottom: 6px; }
+  .login-form h1 .accent { font-weight: 500; }
+  .login-form .sub { font-size: 13px; color: var(--text-muted); text-align:center; margin-bottom: 30px; }
+  .login-form label { font-size: 12.5px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display:block; }
+  .login-form label span { color: var(--petrol-deep); }
+  .inputwrap { position: relative; margin-bottom: 16px; }
+  .inputwrap input {
+    width: 100%; padding: 12px 14px 12px 40px;
+    border: 1px solid var(--baseline); border-radius: 9px;
+    background: var(--page); color: var(--text-primary); font-size: 14px;
+  }
+  .inputwrap input:focus { outline: 2px solid var(--petrol); outline-offset: -1px; }
+  .inputwrap .ic { position:absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
+  .login-row { display:flex; justify-content:space-between; align-items:center; font-size: 12.5px; color: var(--text-secondary); margin: 2px 0 22px; }
+  .login-row a { color: var(--text-primary); text-decoration: none; font-weight: 700; }
+  .btn-primary {
+    width: 100%; padding: 15px; border:none; border-radius: 999px;
+    background: linear-gradient(135deg, var(--petrol), var(--petrol-soft));
+    color: #241D15; font-size: 12.5px; font-weight: 800;
+    letter-spacing: .1em; text-transform: uppercase; cursor:pointer;
+    box-shadow: 0 12px 28px -10px rgba(232,122,30,.65);
+  }
+  .btn-primary:hover { filter: brightness(1.04); }
+  .or { display:flex; align-items:center; gap: 12px; color: var(--text-muted); font-size: 12px; margin: 18px 0; }
+  .or::before, .or::after { content:""; flex:1; height:1px; background: var(--grid); }
+  .sso { display:flex; gap: 12px; }
+  .sso button {
+    flex:1; padding: 11px; border: 1px solid var(--baseline); border-radius: 999px;
+    background: transparent; color: var(--text-primary); font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .sso button:hover { background: var(--hover); }
+  .login-form .hint { font-size: 11.5px; color: var(--text-muted); margin-top: 22px; text-align:center; line-height: 1.55; }
+  .login-promo {
+    position: relative; overflow: hidden;
+    background:
+      radial-gradient(420px 300px at 80% 12%, var(--glow-1), transparent 70%),
+      radial-gradient(380px 280px at 15% 85%, var(--glow-2), transparent 70%),
+      var(--page);
+    border-left: 1px solid var(--border);
+    padding: 48px 44px; display:flex; flex-direction:column; justify-content:center; gap: 26px;
+  }
+  .promo-mock {
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border); border-radius: 14px;
+    padding: 18px; box-shadow: var(--glass-shadow);
+  }
+  .promo-mock .mrow { display:flex; gap: 10px; margin-bottom: 12px; }
+  .promo-mock .mcard { flex:1; border:1px solid var(--glass-border); background: var(--glass-bg); border-radius: 9px; padding: 10px 12px; }
+  .promo-mock .mcard .l { font-size: 9px; font-weight: 700; letter-spacing:.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+  .promo-mock .mcard .v { font-size: 17px; font-weight: 800; }
+  .promo-mock .mcard .d { font-size: 10px; font-weight: 700; color: var(--delta-good); margin-top: 2px; }
+  .promo-bars { display:flex; align-items:flex-end; gap: 6px; height: 56px; padding: 0 4px; }
+  .promo-bars i { flex: 1; background: var(--bar-dim); border-radius: 3px 3px 0 0; display:block; }
+  .promo-bars i.hl { background: linear-gradient(180deg, var(--petrol-soft), var(--petrol)); }
+  .promo-quote { font-size: 17px; line-height: 1.55; color: var(--text-secondary); }
+  .promo-quote .accent { font-size: 17px; }
+  .promo-quote b { color: var(--text-primary); font-weight: 800; }
+  .promo-who { display:flex; align-items:center; gap: 10px; font-size: 12.5px; color: var(--text-muted); }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; flex: none;
+    background: linear-gradient(135deg, var(--petrol), var(--petrol-soft));
+    color:#FAF6EE; font-size: 12px; font-weight: 800;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .promo-who b { color: var(--text-primary); display:block; font-size: 13px; font-weight: 800; }
+  @media (max-width: 880px) { .login-shell { grid-template-columns: 1fr; } .login-promo { display:none; } }
+
+  /* ================= APP SHELL ================= */
+  #app { display: none; position: relative; z-index: 1; }
+  .shell { display: grid; grid-template-columns: 252px 1fr; min-height: 100vh; }
+
+  aside {
+    background: var(--surface-1); border-right: 1px solid var(--border);
+    padding: 20px 14px; display:flex; flex-direction:column; gap: 4px;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  aside .lockup { padding: 2px 8px 18px; }
+  .side-search {
+    display:flex; align-items:center; gap: 8px;
+    border: 1px solid var(--border); border-radius: 9px;
+    padding: 8px 12px; color: var(--text-muted); font-size: 13px; margin-bottom: 14px;
+    background: var(--page);
+  }
+  .side-search kbd {
+    margin-left:auto; font-size: 10px; border: 1px solid var(--border); border-radius: 4px;
+    padding: 1px 5px; color: var(--text-muted); font-family: inherit;
+  }
+  .side-sec { font-size: 10px; letter-spacing: .16em; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 12px 8px 6px; }
+  .nav-item {
+    display:flex; align-items:center; gap: 10px; width: 100%;
+    padding: 10px 11px; border-radius: 9px; border:none; background: transparent;
+    color: var(--text-secondary); font-size: 13.5px; font-weight: 600; cursor: pointer; text-align: left;
+  }
+  .nav-item .nic { width: 18px; text-align:center; opacity:.85; }
+  .nav-item:hover { background: var(--hover); color: var(--text-primary); }
+  .nav-item.active { background: var(--text-primary); color: var(--page); font-weight: 800; }
+  .nav-item .soon {
+    margin-left: auto; font-size: 9.5px; font-weight: 700; letter-spacing:.06em; color: var(--text-muted);
+    border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px;
+  }
+  .side-bottom { margin-top: auto; }
+  .side-user {
+    display:flex; align-items:center; gap: 10px; padding: 10px;
+    border: 1px solid var(--border); border-radius: 14px; margin-top: 10px;
+  }
+  .side-user .nm { font-size: 13px; font-weight: 800; }
+  .side-user .em { font-size: 11px; color: var(--text-muted); }
+
+  main { padding: 0 28px 48px; min-width: 0; }
+  .topbar {
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 22px;
+  }
+  .crumbs { font-size: 13px; color: var(--text-muted); }
+  .crumbs b { color: var(--text-primary); font-weight: 700; }
+  .top-ic { display:flex; gap: 8px; }
+  .top-ic span {
+    width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 9px;
+    display:flex; align-items:center; justify-content:center; color: var(--text-secondary);
+    background: var(--surface-1); font-size: 15px;
+  }
+  .greet { display:flex; align-items:flex-end; justify-content:space-between; gap: 16px; margin-bottom: 22px; flex-wrap:wrap; }
+  .greet h1 { font-size: 25px; font-weight: 800; letter-spacing: -.02em; }
+  .greet p { font-size: 13.5px; color: var(--text-muted); margin-top: 5px; }
+  .greet p .accent { font-size: 14.5px; }
+  .chip {
+    display:inline-flex; align-items:center; gap: 8px;
+    border: 1px solid var(--border); background: var(--surface-1);
+    border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 600; color: var(--text-secondary);
+  }
+
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px;
+    padding: 20px 22px;
+  }
+  .card h2 { font-size: 15px; font-weight: 800; letter-spacing:-.01em; display:flex; align-items:center; gap: 8px; }
+  .card .cardhead { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+  .card .cardhead .sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .card .eyebrow { display:block; margin-bottom: 5px; }
+
+  /* KPI – Glass */
+  .kpis { display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-bottom: 16px; }
+  .tile {
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border); border-radius: 14px;
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-border);
+    padding: 16px 18px;
+  }
+  .tile .label { font-size: 11px; font-weight: 700; letter-spacing:.1em; text-transform: uppercase; color: var(--text-muted); display:flex; align-items:center; margin-bottom: 10px; }
+  .tile .row { display:flex; align-items:center; justify-content:space-between; gap: 10px; }
+  .tile .value { font-size: 27px; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap; }
+  .tile .delta { font-size: 12px; margin-top: 8px; font-weight: 700; }
+  .delta.up { color: var(--delta-good); }
+  .delta.down { color: var(--delta-bad); }
+  .info {
+    display:inline-flex; align-items:center; justify-content:center;
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1px solid var(--baseline); color: var(--text-muted);
+    font-size: 10px; font-style: normal; font-weight:700;
+    cursor: help; margin-left: auto; flex:none; letter-spacing: 0; text-transform: none;
+  }
+
+  .grid-main { display:grid; grid-template-columns: minmax(0, 1.9fr) minmax(280px, 1fr); gap: 14px; margin-bottom: 16px; }
+  @media (max-width: 980px) { .grid-main { grid-template-columns: 1fr; } .shell { grid-template-columns: 1fr; } aside { position: static; height:auto; } }
+
+  /* Bar chart */
+  .bigchart { position: relative; height: 260px; margin-top: 8px; }
+  .gridlines { position:absolute; inset: 0 0 26px 34px; }
+  .gridlines i { position:absolute; left:0; right:0; height:1px; background: var(--grid); }
+  .gridlines label { position:absolute; left:-34px; width: 28px; text-align:right; font-size: 11px; color: var(--text-muted); transform: translateY(-50%); }
+  .bars { position:absolute; inset: 0 0 26px 34px; display:flex; align-items:flex-end; gap: 10px; padding: 0 6px; }
+  .bcol { flex:1; display:flex; align-items:flex-end; height: 100%; position: relative; cursor: default; }
+  .bcol i { display:block; width: 100%; max-width: 34px; margin: 0 auto; background: var(--bar-dim); border-radius: 4px 4px 0 0; transition: background .15s; }
+  .bcol:hover i { background: var(--baseline); filter: brightness(.96); }
+  .bcol.hl i { background: linear-gradient(180deg, var(--petrol-soft), var(--petrol)); box-shadow: 0 10px 24px -10px rgba(232,122,30,.6); }
+  .bcol.hl:hover i { filter: none; }
+  .xlab { position:absolute; inset: auto 0 0 34px; display:flex; gap: 10px; padding: 0 6px; }
+  .xlab span { flex:1; text-align:center; font-size: 11px; color: var(--text-muted); }
+  .hline { position:absolute; left: 34px; right: 0; border-top: 1.5px dashed var(--baseline); }
+  .hbadge {
+    position:absolute; transform: translate(-50%, -130%);
+    background: var(--text-primary); color: var(--page);
+    font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+  }
+
+  /* Feed */
+  .feed-tabs { display:flex; border:1px solid var(--border); border-radius: 999px; overflow:hidden; margin-bottom: 14px; }
+  .feed-tabs button { flex:1; padding: 8px 4px; font-size: 12px; font-weight: 700; border:none; background:transparent; color: var(--text-muted); cursor:pointer; }
+  .feed-tabs button.active { background: var(--text-primary); color: var(--page); }
+  .feed-count { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+  .fitem { display:flex; gap: 12px; padding: 10px 0; border-top: 1px solid var(--grid); }
+  .fitem:first-child { border-top:none; }
+  .fic {
+    width: 30px; height: 30px; border-radius: 9px; flex:none;
+    border: 1px solid var(--border); background: var(--page);
+    display:flex; align-items:center; justify-content:center; font-size: 13px;
+  }
+  .fitem .ft { font-size: 13px; font-weight: 700; }
+  .fitem .fs { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .fitem .tm { margin-left:auto; font-size: 11px; color: var(--text-muted); flex:none; }
+
+  /* Table */
+  .tbl-search {
+    display:flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius: 999px;
+    padding: 7px 14px; font-size: 12.5px; color: var(--text-muted); background: var(--page);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+  th { color: var(--text-muted); font-weight: 700; font-size: 11px; letter-spacing:.08em; text-transform: uppercase; }
+  td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
+  tbody tr:hover td { background: var(--hover); }
+  .who { display:flex; align-items:center; gap: 9px; font-weight: 600; }
+  .badge {
+    display:inline-flex; align-items:center; gap: 6px;
+    font-size: 12px; font-weight: 600; padding: 3px 11px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--text-secondary); background: var(--page);
+  }
+  .badge .b-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* Funnel page */
+  .seg { display:inline-flex; border:1px solid var(--border); border-radius: 999px; background: var(--surface-1); overflow:hidden; margin-bottom: 18px; }
+  .seg button { padding: 10px 20px; font-size: 13px; font-weight: 700; border:none; background:transparent; color: var(--text-secondary); cursor:pointer; }
+  .seg button.active { background: var(--text-primary); color: var(--page); font-weight:800; }
+  .legend { display:flex; gap:18px; font-size:13px; font-weight:600; color:var(--text-secondary); margin-bottom:16px; }
+  .legend .key { display:flex; align-items:center; gap:7px; }
+  .legend .sw { width:11px; height:11px; border-radius:3px; }
+  .stage { padding: 14px 0 12px; border-top: 1px solid var(--grid); }
+  .stage:first-child { border-top:none; padding-top: 2px; }
+  .stage b.sname { font-size: 14px; font-weight: 800; }
+  .stage .stage-desc { font-size: 12px; color: var(--text-muted); margin: 3px 0 9px; }
+  .barrow { display:flex; align-items:center; gap:12px; margin-bottom:5px; }
+  .bartrack { flex:1; height: 24px; position:relative; }
+  .fbar { height: 24px; border-radius: 0 4px 4px 0; position:absolute; left:0; top:0; min-width: 3px; cursor: default; transition: opacity .15s; }
+  .fbar:hover { opacity:.85; }
+  .barrow .num { width: 190px; font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
+  .barrow .num b { color: var(--text-primary); font-variant-numeric: tabular-nums; font-weight: 800; }
+  td.better { color: var(--delta-good); font-weight: 800; }
+
+  /* CTA bar (brand touch) */
+  .ctabar {
+    margin-top: 16px; border-radius: 18px; padding: 22px 26px;
+    background: var(--teal-deep); color: #FAF6EE;
+    display:flex; align-items:center; justify-content:space-between; gap: 16px; flex-wrap: wrap;
+  }
+  .ctabar b { font-size: 15px; font-weight: 800; display:block; }
+  .ctabar span { font-size: 12.5px; opacity:.8; }
+  .ctabar button {
+    border:none; border-radius: 999px; padding: 12px 22px; cursor:pointer;
+    background: linear-gradient(135deg, var(--petrol), var(--petrol-soft));
+    color: #241D15; font-size: 11.5px; font-weight: 800; letter-spacing:.1em; text-transform: uppercase;
+    box-shadow: 0 10px 26px -10px rgba(232,122,30,.7);
+  }
+
+  #tooltip {
+    position: fixed; z-index: 99; pointer-events: none;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 9px; padding: 9px 13px; font-size: 12.5px;
+    box-shadow: 0 4px 16px rgba(36,29,21,.16); display: none;
+    color: var(--text-secondary); line-height: 1.55; max-width: 300px;
+  }
+  #tooltip b { color: var(--text-primary); }
+  footer { font-size: 11.5px; color: var(--text-muted); margin-top: 26px; text-align:center; }
+</style>
+</head>
+<body class="viz-root">
+<div class="backdrop"></div>
+
+<!-- ================= LOGIN ================= -->
+<div id="login">
+  <div class="login-shell">
+    <div class="login-form">
+      <div class="lockup">
+        <span class="mark">B</span>
+        <span class="lt"><b>Barry KDP</b><span>WEBINAR TRACKING</span></span>
+      </div>
+      <h1>Willkommen <span class="accent">zurück.</span></h1>
+      <p class="sub">Alle Webinar-Zahlen an einem Ort – nur für das Team.</p>
+      <label>E-Mail-Adresse <span>*</span></label>
+      <div class="inputwrap"><span class="ic">&#9993;</span><input type="email" id="mail" value="demo@team.de"></div>
+      <label>Passwort <span>*</span></label>
+      <div class="inputwrap"><span class="ic">&#128274;</span><input type="password" id="pw" value="demo1234"></div>
+      <div class="login-row">
+        <span><input type="checkbox" checked id="keep"> <label for="keep" style="display:inline">Angemeldet bleiben</label></span>
+        <a href="#" onclick="return false">Passwort vergessen?</a>
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Anmelden</button>
+      <div class="or">Oder</div>
+      <div class="sso">
+        <button onclick="doLogin()">G&nbsp;&nbsp;Mit Google anmelden</button>
+        <button onclick="doLogin()">&#63743;&nbsp;&nbsp;Mit Apple anmelden</button>
+      </div>
+      <p class="hint">Prototyp: Jede Eingabe funktioniert. In der echten Version: Zugriff nur für eingeladene Team-Accounts, SSL-verschlüsselt.</p>
+    </div>
+    <div class="login-promo">
+      <div class="promo-mock">
+        <div class="mrow">
+          <div class="mcard"><div class="l">Leads</div><div class="v">402</div><div class="d">▲ 15,5 %</div></div>
+          <div class="mcard"><div class="l">Show-Rate</div><div class="v">49,6 %</div><div class="d">▲ 11,2 %</div></div>
+          <div class="mcard"><div class="l">Umsatz</div><div class="v">145 T€</div><div class="d">▲ 47,3 %</div></div>
+        </div>
+        <div class="promo-bars">
+          <i style="height:34%"></i><i style="height:42%"></i><i style="height:38%"></i><i style="height:52%"></i>
+          <i style="height:58%"></i><i style="height:64%"></i><i style="height:72%"></i><i class="hl" style="height:92%"></i>
+        </div>
+      </div>
+      <p class="promo-quote"><b>Endlich sehen wir nach jedem Webinar sofort,</b> welcher Schritt im Funnel besser läuft – und wo wir Geld liegen lassen. <span class="accent">Keine fünf Tools mehr.</span></p>
+      <div class="promo-who"><span class="avatar">B</span><span><b>Barry</b>Founder · Amazon KDP Ads Coach</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app">
+  <div class="shell">
+
+    <aside>
+      <div class="lockup">
+        <span class="mark">B</span>
+        <span class="lt"><b>Barry KDP</b><span>WEBINAR TRACKING</span></span>
+      </div>
+      <div class="side-search">&#128269; Suchen… <kbd>&#8984;K</kbd></div>
+
+      <div class="side-sec">Navigation</div>
+      <button class="nav-item active" data-page="overview"><span class="nic">&#9638;</span> Übersicht</button>
+      <button class="nav-item" data-page="funnel"><span class="nic">&#9660;</span> Funnel &amp; Vergleich</button>
+      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128101;</span> Leads <span class="soon">bald</span></button>
+      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128179;</span> Käufe <span class="soon">bald</span></button>
+      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#127909;</span> Webinare <span class="soon">bald</span></button>
+
+      <div class="side-sec">Analyse &amp; Insights</div>
+      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128200;</span> Berichte <span class="soon">bald</span></button>
+      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128257;</span> Integrationen <span class="soon">bald</span></button>
+
+      <div class="side-bottom">
+        <div class="side-sec">Support</div>
+        <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#10067;</span> Hilfe</button>
+        <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#9881;</span> Einstellungen</button>
+        <div class="side-user">
+          <span class="avatar">EG</span>
+          <span><span class="nm">Egor</span><br><span class="em">demo@team.de</span></span>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div class="crumbs" id="crumbs">Übersicht &nbsp;/&nbsp; <b>Dashboard</b></div>
+        <div class="top-ic"><span>&#128276;</span><span>&#9881;</span></div>
+      </div>
+
+      <!-- ============ PAGE: OVERVIEW ============ -->
+      <section id="page-overview">
+        <div class="greet">
+          <div>
+            <h1>Hallo, Egor &#128075;</h1>
+            <p>Mach deine Webinare <span class="accent">profitabler</span> – alle Zahlen, automatisch aktualisiert über Make.</p>
+          </div>
+          <span class="chip">&#128197; Webinar #2 vs. #1 &nbsp;▾</span>
+        </div>
+
+        <div class="kpis" id="kpis"></div>
+
+        <div class="grid-main">
+          <div class="card">
+            <div class="cardhead">
+              <div><span class="eyebrow">Anmeldungen · 14 Tage</span><h2>Anmeldungen pro Tag</h2><div class="sub">Die 14 Tage vor Webinar #2 · „Tag 0“ = Webinar-Tag · Orange = stärkster Tag</div></div>
+              <span class="chip">Webinar #2 ▾</span>
+            </div>
+            <div class="bigchart" id="bigchart"></div>
+          </div>
+
+          <div class="card">
+            <div class="cardhead"><div><span class="eyebrow">Live</span><h2>Neueste Aktivitäten</h2></div></div>
+            <div class="feed-tabs">
+              <button class="active">Heute</button><button disabled style="opacity:.6">Gestern</button><button disabled style="opacity:.6">Diese Woche</button>
+            </div>
+            <div class="feed-count">6 neue Ereignisse heute</div>
+            <div class="feed" id="feed"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardhead">
+            <div><span class="eyebrow">Ereignis-Log</span><h2>Letzte Ereignisse</h2><div class="sub">Automatisch erfasst aus Typeform, GHL, WebinarJam, Leadtable und Stripe</div></div>
+            <span class="tbl-search">&#128269; Kontakt suchen…</span>
+          </div>
+          <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Kontakt</th><th>Ereignis</th><th>Webinar</th><th>Quelle</th><th>Wann</th><th class="r">Betrag</th></tr></thead>
+            <tbody id="events"></tbody>
+          </table>
+          </div>
+        </div>
+
+        <div class="ctabar">
+          <div><b>Bereit für Webinar #3?</b><span>Funnel steht · Tracking läuft automatisch mit, sobald die ersten Eintragungen kommen.</span></div>
+          <button>Webinar #3 anlegen</button>
+        </div>
+      </section>
+
+      <!-- ============ PAGE: FUNNEL ============ -->
+      <section id="page-funnel" style="display:none">
+        <div class="greet">
+          <div>
+            <span class="eyebrow">Analyse</span>
+            <h1>Funnel &amp; Vergleich</h1>
+            <p>Von der Typeform-Eintragung bis zum Upsell – jede Stufe in Zahlen und <span class="accent">Prozent.</span></p>
+          </div>
+        </div>
+
+        <div class="seg" id="viewseg">
+          <button data-view="both" class="active">Beide vergleichen</button>
+          <button data-view="w1">Nur Webinar #1</button>
+          <button data-view="w2">Nur Webinar #2</button>
+        </div>
+
+        <div class="card" style="margin-bottom:14px">
+          <div class="cardhead">
+            <div><span class="eyebrow">Schritt für Schritt</span><h2 id="funnel-title">Der Funnel</h2><div class="sub">Die Prozentzahl sagt: So viele aus der vorherigen Stufe haben es bis hierher geschafft. Mit der Maus über die Balken fahren zeigt Details.</div></div>
+          </div>
+          <div class="legend" id="funnel-legend">
+            <span class="key"><span class="sw" style="background:var(--series-1)"></span>Webinar #1 (12.06.2026)</span>
+            <span class="key"><span class="sw" style="background:var(--series-2)"></span>Webinar #2 (10.07.2026)</span>
+          </div>
+          <div id="funnel"></div>
+        </div>
+
+        <div class="card">
+          <div class="cardhead"><div><span class="eyebrow">Nachschlagen</span><h2>Alle Zahlen im Detail</h2><div class="sub">Grün markiert ist jeweils der bessere Prozentwert</div></div></div>
+          <div style="overflow-x:auto">
+          <table id="tbl"></table>
+          </div>
+        </div>
+      </section>
+
+      <footer>Prototyp mit Beispieldaten · Barry KDP · Webinar Tracking · Zugriff nur für eingeladene Teammitglieder</footer>
+    </main>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+/* ================= Daten ================= */
+const STAGES = [
+  { key:"typeform",  name:"Typeform-Eintragungen",     desc:"Alle, die das Anmeldeformular ausgefüllt haben (Quelle: Typeform)" },
+  { key:"leads",     name:"Qualifizierte Leads",        desc:"Davon als qualifizierter Kontakt in GHL angelegt (Quelle: GHL)" },
+  { key:"regs",      name:"Webinar-Anmeldungen",        desc:"Davon einen Platz im Webinar gesichert (Quelle: WebinarJam)" },
+  { key:"show",      name:"Live dabei (Show)",          desc:"Davon wirklich live teilgenommen – die Show-Rate (Quelle: WebinarJam)" },
+  { key:"calls",     name:"Strategiegespräche gebucht", desc:"Davon nach dem Webinar ein Gespräch gebucht (Quelle: Leadtable/GHL)" },
+  { key:"coaching",  name:"Coaching gekauft",           desc:"Davon im Gespräch das Coaching gekauft (Quelle: Stripe/GHL)" },
+  { key:"upsell",    name:"Upsell gekauft",             desc:"Davon zusätzlich das Aufbau-Produkt gekauft (Quelle: Stripe)" },
+];
+const W1 = { typeform:412, leads:348, regs:296, show:132, calls:41, coaching:18, upsell:7,  revenue:98630 };
+const W2 = { typeform:486, leads:402, regs:351, show:174, calls:57, coaching:26, upsell:12, revenue:145280 };
+const TS2 = [11,13,15,18,20,19,23,26,28,31,33,35,37,42];
+
+const KPI = [
+  { label:"Typeform-Eintragungen", value:"486", d:+18.0, spark:[30,34,31,38,40,44,43,49,52,55,58,62],
+    tip:"Wie viele Menschen das Typeform-Formular ausgefüllt haben – der Startpunkt des Funnels. Vergleich: Webinar #2 vs. #1." },
+  { label:"Show-Rate", value:"49,6 %", d:+11.2, spark:[40,42,41,44,43,46,45,47,48,47,49,50],
+    tip:"Anteil der Angemeldeten, die wirklich live im Webinar waren. 174 von 351 Angemeldeten." },
+  { label:"Coaching-Käufe", value:"26", d:+44.4, spark:[10,12,11,14,15,14,17,18,20,22,24,26],
+    tip:"Teilnehmer, die nach dem Strategiegespräch das Coaching gekauft haben (Stripe/GHL)." },
+  { label:"Umsatz", value:"145.280 €", d:+47.3, spark:[55,60,58,66,72,70,79,86,92,101,118,145],
+    tip:"Gesamtumsatz aus Coaching- und Upsell-Käufen von Webinar #2." },
+];
+
+const FEED = [
+  { ic:"&#128100;", t:"Neuer qualifizierter Lead", s:"Ayşe D. · Typeform → GHL", tm:"10:21" },
+  { ic:"&#127909;", t:"Neue Webinar-Anmeldung", s:"Webinar #3 · WebinarJam", tm:"10:05" },
+  { ic:"&#128257;", t:"Make-Szenario gelaufen", s:"„Stripe → Events“ · 2 neue Käufe übertragen", tm:"09:48" },
+  { ic:"&#128197;", t:"Strategiegespräch gebucht", s:"Tim B. · Leadtable", tm:"09:40" },
+  { ic:"&#128176;", t:"Upsell-Kauf erfasst", s:"Laura M. · 1.490 € · Stripe", tm:"08:12" },
+  { ic:"&#9989;",   t:"Tages-Sync abgeschlossen", s:"Alle Quellen aktuell · keine Fehler", tm:"07:55" },
+];
+
+const EVENTS = [
+  { who:"Laura M.",  ini:"LM", ev:["Upsell gekauft","good"],   wb:"Webinar #2", src:"Stripe",     tm:"10.07., 21:14", amt:"1.490 €" },
+  { who:"Jonas K.",  ini:"JK", ev:["Coaching gekauft","good"], wb:"Webinar #2", src:"Stripe/GHL", tm:"10.07., 20:56", amt:"4.900 €" },
+  { who:"Tim B.",    ini:"TB", ev:["Gespräch gebucht","cyan"], wb:"Webinar #2", src:"Leadtable",  tm:"11.07., 09:40", amt:"–" },
+  { who:"Miriam S.", ini:"MS", ev:["Live dabei (Show)","cyan"],wb:"Webinar #2", src:"WebinarJam", tm:"10.07., 19:03", amt:"–" },
+  { who:"Ayşe D.",   ini:"AD", ev:["Neuer Lead","mut"],        wb:"Webinar #3 (Vorlauf)", src:"Typeform", tm:"heute, 10:21", amt:"–" },
+];
+
+const fmt  = n => n.toLocaleString("de-DE");
+const fmtE = n => n.toLocaleString("de-DE") + " €";
+const pct  = (a,b) => b ? (100*a/b) : 0;
+const pctS = (a,b) => pct(a,b).toLocaleString("de-DE",{minimumFractionDigits:1, maximumFractionDigits:1}) + " %";
+const css = v => getComputedStyle(document.querySelector(".viz-root")).getPropertyValue(v).trim();
+
+let view = "both";
+
+/* ================= Login / Navigation ================= */
+function doLogin(){
+  document.getElementById("login").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  renderAll();
+}
+document.getElementById("pw").addEventListener("keydown", e => { if(e.key === "Enter") doLogin(); });
+
+document.querySelectorAll(".nav-item[data-page]").forEach(b => {
+  if (!b.dataset.page) return;
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".nav-item").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    const pg = b.dataset.page;
+    document.getElementById("page-overview").style.display = pg === "overview" ? "block" : "none";
+    document.getElementById("page-funnel").style.display   = pg === "funnel"   ? "block" : "none";
+    document.getElementById("crumbs").innerHTML = pg === "overview"
+      ? "Übersicht &nbsp;/&nbsp; <b>Dashboard</b>"
+      : "Analyse &nbsp;/&nbsp; <b>Funnel &amp; Vergleich</b>";
+    if (pg === "funnel") { funnel(); table(); }
+  });
+});
+
+document.querySelectorAll("#viewseg button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll("#viewseg button").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    view = b.dataset.view;
+    funnel(); table();
+  });
+});
+
+/* ================= KPI + Sparklines ================= */
+function spark(data, good){
+  const w = 76, h = 30, max = Math.max(...data), min = Math.min(...data);
+  const x = i => 2 + (w-4) * i / (data.length-1);
+  const y = v => 2 + (h-4) * (1 - (v - min) / ((max - min) || 1));
+  const pts = data.map((v,i) => `${x(i)},${y(v)}`).join(" ");
+  const col = good ? css('--series-2') : css('--delta-bad');
+  return `<svg width="${w}" height="${h}" aria-hidden="true">
+    <polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>
+  </svg>`;
+}
+function kpiTiles(){
+  document.getElementById("kpis").innerHTML = KPI.map(k => {
+    const up = k.d >= 0;
+    return `<div class="tile">
+      <div class="label">${k.label}<i class="info" data-tip="${k.tip.replace(/"/g,'&quot;')}">i</i></div>
+      <div class="row"><span class="value">${k.value}</span>${spark(k.spark, up)}</div>
+      <div class="delta ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(k.d).toLocaleString("de-DE",{maximumFractionDigits:1})} % vs. Webinar #1</div>
+    </div>`;
+  }).join("");
+  attachTips();
+}
+
+/* ================= Big bar chart ================= */
+function bigchart(){
+  const el = document.getElementById("bigchart");
+  const maxY = 50, n = TS2.length;
+  const hiIdx = TS2.indexOf(Math.max(...TS2));
+  let grid = "";
+  for (let g = 0; g <= maxY; g += 10) {
+    const top = (1 - g/maxY) * 100;
+    grid += `<i style="top:${top}%"></i><label style="top:${top}%">${g}</label>`;
+  }
+  const bars = TS2.map((v,i) => {
+    const day = i - 13;
+    const lab = day === 0 ? "Webinar-Tag" : `${Math.abs(day)} Tage vorher`;
+    return `<div class="bcol ${i===hiIdx?'hl':''}" data-tip="<b>${lab}</b><br><b>${v}</b> Anmeldungen">
+      <i style="height:${100*v/maxY}%"></i>
+    </div>`;
+  }).join("");
+  const xlab = TS2.map((v,i) => {
+    const day = i - 13;
+    return `<span>${(i%2===1) ? (day===0 ? "Tag 0" : day) : ""}</span>`;
+  }).join("");
+  el.innerHTML = `
+    <div class="gridlines">${grid}</div>
+    <div class="bars">${bars}</div>
+    <div class="hline"></div>
+    <div class="xlab">${xlab}</div>`;
+  requestAnimationFrame(() => {
+    const chart = el.getBoundingClientRect();
+    const hl = el.querySelector(".bcol.hl i").getBoundingClientRect();
+    const line = el.querySelector(".hline");
+    line.style.top = (hl.top - chart.top) + "px";
+    const badge = document.createElement("div");
+    badge.className = "hbadge";
+    badge.textContent = "Tag 0 · 42";
+    badge.style.left = (hl.left - chart.left + hl.width/2) + "px";
+    badge.style.top = (hl.top - chart.top) + "px";
+    el.appendChild(badge);
+  });
+  attachTips();
+}
+
+/* ================= Feed & Events ================= */
+function feed(){
+  document.getElementById("feed").innerHTML = FEED.map(f =>
+    `<div class="fitem"><span class="fic">${f.ic}</span><span><span class="ft">${f.t}</span><br><span class="fs">${f.s}</span></span><span class="tm">${f.tm}</span></div>`
+  ).join("");
+}
+function events(){
+  const dot = kind => kind === "good" ? css('--mint')
+            : kind === "cyan" ? css('--cyan')
+            : css('--baseline');
+  document.getElementById("events").innerHTML = EVENTS.map(e => `
+    <tr>
+      <td><span class="who"><span class="avatar" style="width:28px;height:28px;font-size:11px">${e.ini}</span>${e.who}</span></td>
+      <td><span class="badge"><span class="b-dot" style="background:${dot(e.ev[1])}"></span>${e.ev[0]}</span></td>
+      <td>${e.wb}</td>
+      <td>${e.src}</td>
+      <td>${e.tm}</td>
+      <td class="r">${e.amt}</td>
+    </tr>`).join("");
+}
+
+/* ================= Funnel page ================= */
+function funnel(){
+  const el = document.getElementById("funnel");
+  const legend = document.getElementById("funnel-legend");
+  const title = document.getElementById("funnel-title");
+  const max = Math.max(W1.typeform, W2.typeform);
+  const series = view === "w1" ? [["Webinar #1", W1, "--series-1"]]
+               : view === "w2" ? [["Webinar #2", W2, "--series-2"]]
+               : [["Webinar #1", W1, "--series-1"], ["Webinar #2", W2, "--series-2"]];
+  legend.style.display = series.length > 1 ? "flex" : "none";
+  title.textContent = series.length > 1 ? "Der Funnel" : "Der Funnel – " + series[0][0];
+
+  el.innerHTML = STAGES.map((st, i) => {
+    const rows = series.map(([name, D, col]) => {
+      const v = D[st.key];
+      const prev = i > 0 ? D[STAGES[i-1].key] : null;
+      const convPrev = prev ? pctS(v, prev) : "–";
+      const convStart = pctS(v, D[STAGES[0].key]);
+      const w = Math.max(0.6, 100 * v / max);
+      const numTxt = i > 0 ? `<b>${fmt(v)}</b> · ${convPrev} der Vorstufe` : `<b>${fmt(v)}</b> Personen`;
+      return `<div class="barrow">
+        <div class="bartrack">
+          <div class="fbar" style="width:${w}%; background:var(${col})"
+            data-tip="<b>${name} · ${st.name}</b><br>${fmt(v)} Personen${prev ? `<br>${convPrev} der vorherigen Stufe (${fmt(prev)})` : ""}<br>${convStart} aller Eintragungen"></div>
+        </div>
+        <div class="num">${numTxt}</div>
+      </div>`;
+    }).join("");
+    return `<div class="stage">
+      <b class="sname">${i+1}. ${st.name}</b>
+      <div class="stage-desc">${st.desc}</div>
+      ${rows}
+    </div>`;
+  }).join("");
+  attachTips();
+}
+function table(){
+  const t = document.getElementById("tbl");
+  let rows = `<thead><tr><th>Stufe</th><th class="r">Webinar #1</th><th class="r">Conversion</th><th class="r">Webinar #2</th><th class="r">Conversion</th></tr></thead><tbody>`;
+  STAGES.forEach((st, i) => {
+    const p1 = i ? pct(W1[st.key], W1[STAGES[i-1].key]) : null;
+    const p2 = i ? pct(W2[st.key], W2[STAGES[i-1].key]) : null;
+    const b1 = p1 !== null && p1 > p2, b2 = p2 !== null && p2 > p1;
+    rows += `<tr><td>${st.name}</td>
+      <td class="r">${fmt(W1[st.key])}</td><td class="r ${b1?'better':''}">${p1===null?"–":pctS(W1[st.key], W1[STAGES[i-1].key])}</td>
+      <td class="r">${fmt(W2[st.key])}</td><td class="r ${b2?'better':''}">${p2===null?"–":pctS(W2[st.key], W2[STAGES[i-1].key])}</td></tr>`;
+  });
+  rows += `<tr><td><b>Umsatz gesamt</b></td><td class="r"><b>${fmtE(W1.revenue)}</b></td><td></td><td class="r better"><b>${fmtE(W2.revenue)}</b></td><td></td></tr></tbody>`;
+  t.innerHTML = rows;
+}
+
+/* ================= Tooltip ================= */
+const tip = document.getElementById("tooltip");
+function attachTips(){
+  document.querySelectorAll("[data-tip]").forEach(n => {
+    if (n.dataset.tipBound) return;
+    n.dataset.tipBound = "1";
+    const show = e => {
+      tip.innerHTML = n.dataset.tip;
+      tip.style.display = "block";
+      const pad = 14;
+      let x = e.clientX + pad, y = e.clientY + pad;
+      const r = tip.getBoundingClientRect();
+      if (x + r.width  > window.innerWidth  - 8) x = e.clientX - r.width  - pad;
+      if (y + r.height > window.innerHeight - 8) y = e.clientY - r.height - pad;
+      tip.style.left = x + "px"; tip.style.top = y + "px";
+    };
+    n.addEventListener("mousemove", show);
+    n.addEventListener("click", show);
+    n.addEventListener("mouseleave", () => tip.style.display = "none");
+  });
+}
+document.addEventListener("click", e => { if (!e.target.closest("[data-tip]")) tip.style.display = "none"; });
+
+function renderAll(){ kpiTiles(); bigchart(); feed(); events(); funnel(); table(); }
+window.addEventListener("resize", () => { if (document.getElementById("app").style.display === "block") bigchart(); });
+</script>
+</body>
+</html>
