@@ -338,6 +338,24 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   footer { font-size: 11.5px; color: var(--text-muted); margin-top: 26px; text-align:center; }
+  .side-search input { flex:1; min-width:0; background:transparent; border:none; outline:none; color: var(--text-primary); font-size: 13px; }
+  .side-search input::placeholder { color: var(--text-muted); }
+  .pagegrid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .int-card { display:flex; align-items:center; gap: 14px; }
+  .int-card .iic { width: 40px; height: 40px; border-radius: 11px; border:1px solid var(--border); background: var(--hover); display:flex; align-items:center; justify-content:center; font-size: 17px; flex:none; }
+  .int-card .st { font-size: 12px; margin-top: 3px; }
+  .int-card .st.on { color: var(--delta-good); font-weight: 700; }
+  .int-card .st.off { color: var(--text-muted); }
+  .int-card b { font-size: 14px; }
+  .set-label { font-size: 12.5px; font-weight: 600; color: var(--text-secondary); margin: 14px 0 6px; display:block; }
+  .set-input { width:100%; max-width: 380px; padding: 12px 14px; border: 1px solid var(--baseline); border-radius: 9px; background: rgba(255,255,255,0.04); color: var(--text-primary); font-size: 14px; }
+  .set-input:focus { outline: 2px solid var(--petrol); outline-offset: -1px; }
+  .btn-sm { display:inline-block; width:auto; padding: 12px 24px; border:none; border-radius:999px; background: linear-gradient(135deg, var(--petrol), var(--petrol-soft)); color:#05130C; font-size: 11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; box-shadow: 0 10px 24px -10px rgba(74,222,128,.5); margin-top: 14px; }
+  .btn-sm:hover { filter: brightness(1.05); }
+  .btn-line { display:inline-block; width:auto; padding: 11px 22px; border:1px solid var(--baseline); border-radius:999px; background:transparent; color: var(--text-secondary); font-size: 11.5px; font-weight:700; cursor:pointer; margin: 14px 10px 0 0; }
+  .btn-line:hover { color: var(--text-primary); background: var(--hover); }
+  .help-block b { display:block; font-size: 13.5px; margin-bottom: 3px; }
+  .help-block { border:1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: var(--hover); font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
 </style>
 </head>
 <body class="viz-root">
@@ -421,23 +439,23 @@
         <span class="mark">B</span>
         <span class="lt"><b>Barry KDP</b><span>WEBINAR TRACKING</span></span>
       </div>
-      <div class="side-search"><span>&#128269;</span><span id="t-search"></span> <kbd>&#8984;K</kbd></div>
+      <div class="side-search"><span>&#128269;</span><input id="q" autocomplete="off"> <kbd>&#8984;K</kbd></div>
 
       <div class="side-sec" id="t-nav"></div>
       <button class="nav-item active" data-page="overview"><span class="nic">&#9638;</span> <span id="t-nav-overview"></span></button>
       <button class="nav-item" data-page="funnel"><span class="nic">&#9660;</span> <span id="t-nav-funnel"></span></button>
-      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128101;</span> Leads <span class="soon" data-soon></span></button>
-      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128179;</span> <span id="t-nav-sales"></span> <span class="soon" data-soon></span></button>
-      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#127909;</span> <span id="t-nav-webinars"></span> <span class="soon" data-soon></span></button>
+      <button class="nav-item" data-page="leads"><span class="nic">&#128101;</span> Leads</button>
+      <button class="nav-item" data-page="sales"><span class="nic">&#128179;</span> <span id="t-nav-sales"></span></button>
+      <button class="nav-item" data-page="webinars"><span class="nic">&#127909;</span> <span id="t-nav-webinars"></span></button>
 
       <div class="side-sec" id="t-nav-analytics"></div>
-      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128200;</span> <span id="t-nav-reports"></span> <span class="soon" data-soon></span></button>
-      <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#128257;</span> <span id="t-nav-int"></span> <span class="soon" data-soon></span></button>
+      <button class="nav-item" data-page="reports"><span class="nic">&#128200;</span> <span id="t-nav-reports"></span></button>
+      <button class="nav-item" data-page="integrations"><span class="nic">&#128257;</span> <span id="t-nav-int"></span></button>
 
       <div class="side-bottom">
         <div class="side-sec">Support</div>
-        <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#10067;</span> <span id="t-nav-help"></span></button>
-        <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#9881;</span> <span id="t-nav-settings"></span></button>
+        <button class="nav-item" data-page="help"><span class="nic">&#10067;</span> <span id="t-nav-help"></span></button>
+        <button class="nav-item" data-page="settings"><span class="nic">&#9881;</span> <span id="t-nav-settings"></span></button>
         <div class="side-user">
           <span class="avatar" id="user-ini">–</span>
           <span><span class="nm" id="user-name">–</span><br><span class="em" id="user-mail">–</span></span>
@@ -538,6 +556,83 @@
         </div>
       </section>
 
+      <!-- ============ WEITERE SEITEN ============ -->
+      <section id="page-leads" style="display:none">
+        <div class="greet"><div><span class="eyebrow">Leads</span><h1 id="t-l-h1"></h1><p id="t-l-sub"></p></div></div>
+        <div class="kpis" id="leads-tiles"></div>
+        <div class="card"><div style="overflow-x:auto"><table id="leads-tbl"></table></div></div>
+      </section>
+
+      <section id="page-sales" style="display:none">
+        <div class="greet"><div><span class="eyebrow" id="t-s-eyebrow"></span><h1 id="t-s-h1"></h1><p id="t-s-sub"></p></div></div>
+        <div class="kpis" id="sales-tiles"></div>
+        <div class="card"><div style="overflow-x:auto"><table id="sales-tbl"></table></div></div>
+      </section>
+
+      <section id="page-webinars" style="display:none">
+        <div class="greet"><div><span class="eyebrow" id="t-w-eyebrow"></span><h1 id="t-w-h1"></h1><p id="t-w-sub"></p></div></div>
+        <div class="pagegrid" id="webinar-cards"></div>
+      </section>
+
+      <section id="page-reports" style="display:none">
+        <div class="greet"><div><span class="eyebrow" id="t-r-eyebrow"></span><h1 id="t-r-h1"></h1><p id="t-r-sub"></p></div></div>
+        <div class="card">
+          <h2 id="t-r-exp-h2"></h2>
+          <p class="sub" id="t-r-exp-sub" style="margin-top:4px"></p>
+          <button class="btn-line" onclick="csvExport()" id="t-r-csv"></button>
+          <button class="btn-line" onclick="copySummary()" id="t-r-copy"></button>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h2 id="t-r-auto-h2"></h2>
+          <p class="sub" id="t-r-auto-sub" style="margin-top:4px"></p>
+        </div>
+      </section>
+
+      <section id="page-integrations" style="display:none">
+        <div class="greet"><div><span class="eyebrow" id="t-i-eyebrow"></span><h1 id="t-i-h1"></h1><p id="t-i-sub"></p></div></div>
+        <div class="pagegrid" id="int-cards"></div>
+      </section>
+
+      <section id="page-help" style="display:none">
+        <div class="greet"><div><span class="eyebrow">Support</span><h1 id="t-h-h1"></h1><p id="t-h-sub"></p></div></div>
+        <div class="pagegrid" id="help-cards"></div>
+        <div class="card" style="margin-top:14px"><h2 id="t-h-contact-h2"></h2><p class="sub" id="t-h-contact" style="margin-top:4px"></p></div>
+      </section>
+
+      <section id="page-settings" style="display:none">
+        <div class="greet"><div><span class="eyebrow" id="t-set-eyebrow"></span><h1 id="t-set-h1"></h1><p id="t-set-sub"></p></div></div>
+        <div class="pagegrid">
+          <div class="card">
+            <h2 id="t-set-lang-h2"></h2>
+            <p class="sub" id="t-set-lang-sub" style="margin-top:4px"></p>
+            <span class="lang" style="margin-top:6px"><button id="lang-de-s" onclick="setLang('de')">DE</button><button id="lang-en-s" onclick="setLang('en')">EN</button></span>
+          </div>
+          <div class="card">
+            <h2 id="t-set-pw-h2"></h2>
+            <label class="set-label" id="t-set-pw1"></label>
+            <input type="password" class="set-input" id="spw1" autocomplete="new-password">
+            <label class="set-label" id="t-set-pw2"></label>
+            <input type="password" class="set-input" id="spw2" autocomplete="new-password">
+            <div class="msg err" id="spwerr" style="margin-top:12px"></div>
+            <button class="btn-sm" onclick="doSettingsPassword()" id="t-set-pw-btn"></button>
+          </div>
+          <div class="card">
+            <h2 id="t-set-acc-h2"></h2>
+            <p class="sub" style="margin-top:4px"><span id="t-set-acc-as"></span><br><b id="set-acc-mail" style="color:var(--text-primary)"></b></p>
+            <button class="btn-line" onclick="doLogout()">Logout</button>
+          </div>
+          <div class="card">
+            <h2 id="t-set-sys-h2"></h2>
+            <p class="sub" id="t-set-sys" style="margin-top:4px; line-height:1.7"></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-search" style="display:none">
+        <div class="greet"><div><span class="eyebrow" id="t-q-eyebrow"></span><h1 id="q-title"></h1><p id="q-sub"></p></div></div>
+        <div class="card"><div style="overflow-x:auto"><table id="q-tbl"></table></div></div>
+      </section>
+
       <footer id="t-footer"></footer>
     </main>
   </div>
@@ -619,6 +714,26 @@ const I18N = {
       upsell:   ['Upsell gekauft', 'Davon zusätzlich das Aufbau-Produkt gekauft (Quelle: Stripe)'],
     },
     kinds: { lead:'Neuer qualifizierter Lead', call:'Gespräch gebucht', show:'Live dabei (Show)', coaching:'Coaching gekauft', upsell:'Upsell gekauft', sync:'Make-Szenario gelaufen' },
+    lH1: 'Leads', lSub: 'Alle erfassten Lead-Ereignisse – automatisch aus Typeform und GHL.', lCount: 'Leads erfasst', lLast: 'Letzter Lead',
+    sEyebrow: 'Umsatz', sH1: 'Käufe', sSub: 'Coaching- und Upsell-Käufe – automatisch aus Stripe/GHL.',
+    sCoaching: 'Coaching-Käufe', sUpsell: 'Upsell-Käufe', sRevenue: 'Umsatz (aus Ereignissen)',
+    wEyebrow: 'Übersicht', wH1: 'Webinare', wSub: 'Alle Webinare mit ihren Kernzahlen.',
+    wRegs: 'Anmeldungen', wShow: 'Show-Rate', wRev: 'Umsatz', wOpen: 'Funnel ansehen',
+    rEyebrow: 'Berichte', rH1: 'Berichte & Export', rSub: 'Daten mitnehmen – für Analysen, Steuerberater oder das Team-Meeting.',
+    rExpH2: 'Export', rExpSub: 'Lädt die erfassten Ereignisse als CSV herunter oder kopiert eine Kurz-Zusammenfassung beider Webinare in die Zwischenablage.',
+    rCsv: 'Ereignisse als CSV', rCopy: 'Zusammenfassung kopieren', rCsvDone: 'CSV heruntergeladen', rCopyDone: 'Zusammenfassung kopiert!',
+    rAutoH2: 'Automatische Reports', rAutoSub: 'Als Nächstes möglich: Wochenreport automatisch in euren Slack – kommt mit der Make-Anbindung (Stufe 1 & 5 im Ausbauplan).',
+    iEyebrow: 'Datenquellen', iH1: 'Integrationen', iSub: 'Welche Tools Daten liefern – und wann das letzte Ereignis ankam.',
+    iOn: 'Verbunden', iOff: 'Wartet auf erste Daten', iLast: n => `Letztes Ereignis: ${n}`,
+    hH1: 'Hilfe', hSub: 'Begriffe, Erklärungen und Kontakt.', hContactH2: 'Kontakt',
+    hContact: 'Fragen, neuer Zugang oder Passwort-Probleme? → Egor ansprechen. Passwort selbst zurücksetzen geht auf der Login-Seite über „Passwort vergessen?“.',
+    setEyebrow: 'Konto', setH1: 'Einstellungen', setSub: 'Sprache, Passwort und Konto.',
+    setLangH2: 'Sprache', setLangSub: 'Gilt für alle Texte sowie Zahlen- und Datumsformate. Wird gespeichert.',
+    setPwH2: 'Passwort ändern', setPw1: 'Neues Passwort', setPw2: 'Wiederholen', setPwBtn: 'Speichern', setPwDone: 'Passwort geändert!',
+    setAccH2: 'Konto', setAccAs: 'Angemeldet als',
+    setSysH2: 'System', setSys: 'Dashboard: Vercel · Datenbank & Login: Supabase (EU) · Datenfluss: Make.<br>Design: Dark · Neon-Grün · Version 2.0',
+    qEyebrow: 'Suche', qTitle: 'Suche', qHint: 'Tippe oben links ins Suchfeld (⌘K) – durchsucht Kontakte, Ereignisse, Webinare und Quellen.',
+    qFor: n => `Treffer für „${n}“`, qNone: n => `Keine Treffer für „${n}“`,
     langToast: 'Sprache: Deutsch',
   },
   en: {
@@ -686,6 +801,26 @@ const I18N = {
       upsell:   ['Upsell purchased', 'Of those, also bought the follow-up product (source: Stripe)'],
     },
     kinds: { lead:'New qualified lead', call:'Call booked', show:'Attended live', coaching:'Coaching purchased', upsell:'Upsell purchased', sync:'Make scenario ran' },
+    lH1: 'Leads', lSub: 'All captured lead events – automatically from Typeform and GHL.', lCount: 'Leads captured', lLast: 'Latest lead',
+    sEyebrow: 'Revenue', sH1: 'Purchases', sSub: 'Coaching and upsell purchases – automatically from Stripe/GHL.',
+    sCoaching: 'Coaching sales', sUpsell: 'Upsell sales', sRevenue: 'Revenue (from events)',
+    wEyebrow: 'Overview', wH1: 'Webinars', wSub: 'All webinars with their key numbers.',
+    wRegs: 'Registrations', wShow: 'Show rate', wRev: 'Revenue', wOpen: 'View funnel',
+    rEyebrow: 'Reports', rH1: 'Reports & Export', rSub: 'Take your data with you – for analysis, accounting or the team meeting.',
+    rExpH2: 'Export', rExpSub: 'Downloads the captured events as CSV or copies a short summary of both webinars to your clipboard.',
+    rCsv: 'Events as CSV', rCopy: 'Copy summary', rCsvDone: 'CSV downloaded', rCopyDone: 'Summary copied!',
+    rAutoH2: 'Automated reports', rAutoSub: 'Coming next: a weekly report posted to your Slack automatically – ships with the Make integration (steps 1 & 5 of the roadmap).',
+    iEyebrow: 'Data sources', iH1: 'Integrations', iSub: 'Which tools deliver data – and when the last event arrived.',
+    iOn: 'Connected', iOff: 'Waiting for first data', iLast: n => `Last event: ${n}`,
+    hH1: 'Help', hSub: 'Terms, explanations and contact.', hContactH2: 'Contact',
+    hContact: 'Questions, new account or password trouble? → Talk to Egor. You can reset your password yourself on the sign-in page via “Forgot password?”.',
+    setEyebrow: 'Account', setH1: 'Settings', setSub: 'Language, password and account.',
+    setLangH2: 'Language', setLangSub: 'Applies to all texts plus number and date formats. Saved automatically.',
+    setPwH2: 'Change password', setPw1: 'New password', setPw2: 'Repeat', setPwBtn: 'Save', setPwDone: 'Password changed!',
+    setAccH2: 'Account', setAccAs: 'Signed in as',
+    setSysH2: 'System', setSys: 'Dashboard: Vercel · Database & login: Supabase (EU) · Data flow: Make.<br>Design: dark · neon green · version 2.0',
+    qEyebrow: 'Search', qTitle: 'Search', qHint: 'Type into the search box top left (⌘K) – searches contacts, events, webinars and sources.',
+    qFor: n => `Results for “${n}”`, qNone: n => `No results for “${n}”`,
     langToast: 'Language: English',
   },
 };
@@ -700,6 +835,7 @@ const STAGE_KEYS = ['typeform','leads','regs','show','calls','coaching','upsell'
 let W1 = null, W2 = null, TS2 = [], EVENTS = [];
 let view = 'both';
 let loggedIn = false;
+let curPage = 'overview';
 
 const fmt  = n => Number(n).toLocaleString(LOC());
 const fmtE = n => lang === 'de' ? Number(n).toLocaleString('de-DE') + ' €' : '€' + Number(n).toLocaleString('en-US');
@@ -760,8 +896,25 @@ function translate(){
   setHtml('t-nav-analytics', t.navAnalytics); setHtml('t-nav-reports', t.navReports);
   setHtml('t-nav-int', t.navInt); setHtml('t-nav-help', t.navHelp); setHtml('t-nav-settings', t.navSettings);
   document.querySelectorAll('[data-soon]').forEach(el => el.textContent = t.soon);
-  const pg = document.getElementById('page-overview').style.display !== 'none' ? 'overview' : 'funnel';
-  setHtml('crumbs', pg === 'overview' ? t.crumbsOverview : t.crumbsFunnel);
+  setHtml('crumbs', crumbFor(curPage));
+  const qi = document.getElementById('q'); if (qi) qi.placeholder = t.search;
+  ['lang-de-s'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('active', lang==='de'); });
+  ['lang-en-s'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('active', lang==='en'); });
+  setHtml('t-l-h1', t.lH1); setHtml('t-l-sub', t.lSub);
+  setHtml('t-s-eyebrow', t.sEyebrow); setHtml('t-s-h1', t.sH1); setHtml('t-s-sub', t.sSub);
+  setHtml('t-w-eyebrow', t.wEyebrow); setHtml('t-w-h1', t.wH1); setHtml('t-w-sub', t.wSub);
+  setHtml('t-r-eyebrow', t.rEyebrow); setHtml('t-r-h1', t.rH1); setHtml('t-r-sub', t.rSub);
+  setHtml('t-r-exp-h2', t.rExpH2); setHtml('t-r-exp-sub', t.rExpSub);
+  setHtml('t-r-csv', t.rCsv); setHtml('t-r-copy', t.rCopy);
+  setHtml('t-r-auto-h2', t.rAutoH2); setHtml('t-r-auto-sub', t.rAutoSub);
+  setHtml('t-i-eyebrow', t.iEyebrow); setHtml('t-i-h1', t.iH1); setHtml('t-i-sub', t.iSub);
+  setHtml('t-h-h1', t.hH1); setHtml('t-h-sub', t.hSub); setHtml('t-h-contact-h2', t.hContactH2); setHtml('t-h-contact', t.hContact);
+  setHtml('t-set-eyebrow', t.setEyebrow); setHtml('t-set-h1', t.setH1); setHtml('t-set-sub', t.setSub);
+  setHtml('t-set-lang-h2', t.setLangH2); setHtml('t-set-lang-sub', t.setLangSub);
+  setHtml('t-set-pw-h2', t.setPwH2); setHtml('t-set-pw1', t.setPw1); setHtml('t-set-pw2', t.setPw2); setHtml('t-set-pw-btn', t.setPwBtn);
+  setHtml('t-set-acc-h2', t.setAccH2); setHtml('t-set-acc-as', t.setAccAs);
+  setHtml('t-set-sys-h2', t.setSysH2); setHtml('t-set-sys', t.setSys);
+  setHtml('t-q-eyebrow', t.qEyebrow);
   setHtml('t-greet-sub', t.greetSub); setHtml('t-chip-compare', t.chipCompare);
   setHtml('t-chart-eyebrow', t.chartEyebrow); setHtml('t-chart-h2', t.chartH2); setHtml('t-chart-sub', t.chartSub);
   setHtml('t-feed-h2', t.feedH2); setHtml('t-tab-now', t.tabNow); setHtml('t-tab-yday', t.tabYday); setHtml('t-tab-week', t.tabWeek);
@@ -868,7 +1021,7 @@ document.getElementById('npw2').addEventListener('keydown', e => { if(e.key === 
 async function enterApp(){
   const [wRes, eRes, uRes] = await Promise.all([
     sb.from('webinars').select('*').order('id'),
-    sb.from('events').select('*').order('ts', { ascending: false }).limit(8),
+    sb.from('events').select('*').order('ts', { ascending: false }).limit(200),
     sb.auth.getUser(),
   ]);
   if (wRes.error || !wRes.data || wRes.data.length < 2) {
@@ -887,6 +1040,7 @@ async function enterApp(){
   document.getElementById('user-name').textContent = name.charAt(0).toUpperCase() + name.slice(1);
   document.getElementById('user-mail').textContent = email;
   window._userName = name.charAt(0).toUpperCase() + name.slice(1);
+  window._userEmail = email;
 
   loggedIn = true;
   document.getElementById('login').style.display = 'none';
@@ -1006,19 +1160,159 @@ function events(){
     </tr>`).join('');
 }
 
-/* ================= Navigation ================= */
-document.querySelectorAll('.nav-item[data-page]').forEach(b => {
-  if (!b.dataset.page) return;
-  b.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    const pg = b.dataset.page;
-    document.getElementById('page-overview').style.display = pg === 'overview' ? 'block' : 'none';
-    document.getElementById('page-funnel').style.display   = pg === 'funnel'   ? 'block' : 'none';
-    setHtml('crumbs', pg === 'overview' ? T().crumbsOverview : T().crumbsFunnel);
-    if (pg === 'funnel') { funnel(); table(); }
-  });
+/* ================= Seiten-Router ================= */
+const PAGES = ['overview','funnel','leads','sales','webinars','reports','integrations','help','settings','search'];
+function crumbFor(pg){
+  const t = T();
+  const sec = (pg==='reports'||pg==='integrations') ? t.navAnalytics : (pg==='help'||pg==='settings') ? 'Support' : (pg==='search') ? t.qEyebrow : t.nav;
+  const lbl = {overview:t.navOverview, funnel:t.navFunnel, leads:'Leads', sales:t.navSales, webinars:t.navWebinars, reports:t.navReports, integrations:t.navInt, help:t.navHelp, settings:t.navSettings, search:t.qTitle}[pg] || pg;
+  return sec + ' &nbsp;/&nbsp; <b>' + lbl + '</b>';
+}
+function showPage(pg){
+  curPage = pg;
+  PAGES.forEach(p => { const el = document.getElementById('page-'+p); if (el) el.style.display = p===pg ? 'block' : 'none'; });
+  document.querySelectorAll('.nav-item').forEach(x => x.classList.toggle('active', x.dataset.page === pg));
+  setHtml('crumbs', crumbFor(pg));
+  renderPage(pg);
+}
+function renderPage(pg){
+  if (!loggedIn) return;
+  if (pg==='funnel'){ funnel(); table(); }
+  if (pg==='leads') renderLeads();
+  if (pg==='sales') renderSales();
+  if (pg==='webinars') renderWebinars();
+  if (pg==='integrations') renderIntegrations();
+  if (pg==='help') renderHelp();
+  if (pg==='settings') renderSettings();
+  if (pg==='search') renderSearch();
+}
+document.querySelectorAll('.nav-item[data-page]').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
+
+/* ================= Suche ================= */
+let searchQ = '';
+const qInput = document.getElementById('q');
+qInput.addEventListener('input', () => {
+  searchQ = qInput.value.trim();
+  if (!loggedIn) return;
+  if (searchQ) { if (curPage !== 'search') showPage('search'); else renderSearch(); }
+  else if (curPage === 'search') renderSearch();
 });
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); qInput.focus(); qInput.select(); }
+});
+function renderSearch(){
+  const t = T();
+  setHtml('q-title', searchQ ? t.qFor(searchQ) : t.qTitle);
+  const list = !searchQ ? [] : EVENTS.filter(e =>
+    [e.contact, e.label, kindLabel(e), e.webinar, e.source].filter(Boolean)
+      .some(x => x.toLowerCase().includes(searchQ.toLowerCase())));
+  setHtml('q-sub', !searchQ ? t.qHint : (list.length ? '' : t.qNone(searchQ)));
+  evTable(list, 'q-tbl');
+}
+
+/* ================= Seiten-Renderer ================= */
+function evRow(e){
+  return '<tr>' +
+    '<td><span class="who"><span class="avatar" style="width:28px;height:28px;font-size:11px">' + (e.initials || '··') + '</span>' + (e.contact || '–') + '</span></td>' +
+    '<td><span class="badge"><span class="b-dot" style="background:' + KIND_DOT(e.kind) + '"></span>' + kindLabel(e) + '</span></td>' +
+    '<td>' + (e.webinar || '–') + '</td>' +
+    '<td>' + (e.source || '–') + '</td>' +
+    '<td>' + fmtTs(e.ts) + '</td>' +
+    '<td class="r">' + (e.amount ? fmtE(e.amount) : '–') + '</td></tr>';
+}
+function evTable(list, id){
+  const t = T();
+  const el = document.getElementById(id);
+  el.innerHTML = '<thead><tr><th>' + t.thContact + '</th><th>' + t.thEvent + '</th><th>Webinar</th><th>' + t.thSource + '</th><th>' + t.thWhen + '</th><th class="r">' + t.thAmount + '</th></tr></thead><tbody>' + list.map(evRow).join('') + '</tbody>';
+}
+function miniTile(label, value){
+  return '<div class="tile"><div class="label">' + label + '</div><div class="row"><span class="value">' + value + '</span></div></div>';
+}
+function renderLeads(){
+  const t = T();
+  const list = EVENTS.filter(e => e.kind === 'lead' || e.kind === 'reg');
+  document.getElementById('leads-tiles').innerHTML =
+    miniTile(t.lCount, fmt(list.length)) +
+    miniTile(t.lLast, list.length ? fmtTs(list[0].ts) : '–');
+  evTable(list, 'leads-tbl');
+}
+function renderSales(){
+  const t = T();
+  const list = EVENTS.filter(e => e.kind === 'coaching' || e.kind === 'upsell');
+  const rev = list.reduce((a,e) => a + (Number(e.amount) || 0), 0);
+  document.getElementById('sales-tiles').innerHTML =
+    miniTile(t.sCoaching, fmt(list.filter(e=>e.kind==='coaching').length)) +
+    miniTile(t.sUpsell, fmt(list.filter(e=>e.kind==='upsell').length)) +
+    miniTile(t.sRevenue, fmtE(rev));
+  evTable(list, 'sales-tbl');
+}
+function openFunnel(v){
+  view = v;
+  showPage('funnel');
+  document.querySelectorAll('#viewseg button').forEach(x => x.classList.toggle('active', x.dataset.view === v));
+  funnel(); table();
+}
+function renderWebinars(){
+  const t = T();
+  document.getElementById('webinar-cards').innerHTML = [W1, W2].map((D,i) =>
+    '<div class="card">' +
+      '<span class="eyebrow">' + (D.event_date ? fmtDate(D.event_date) : '') + '</span>' +
+      '<h2>' + D.name + '</h2>' +
+      '<p class="sub" style="margin-top:8px;line-height:1.9">' +
+        t.wRegs + ': <b style="color:var(--text-primary)">' + fmt(D.regs) + '</b><br>' +
+        t.wShow + ': <b style="color:var(--text-primary)">' + pctS(D.show, D.regs) + '</b><br>' +
+        t.wRev + ': <b style="color:var(--text-primary)">' + fmtE(D.revenue) + '</b></p>' +
+      '<button class="btn-line" onclick="openFunnel(\'' + (i===0?'w1':'w2') + '\')">' + t.wOpen + '</button>' +
+    '</div>').join('');
+}
+function csvExport(){
+  const head = 'ts;contact;kind;label;webinar;source;amount';
+  const rows = EVENTS.map(e => [e.ts, e.contact||'', e.kind, (T().kinds[e.kind]||e.label||''), e.webinar||'', e.source||'', e.amount||''].map(v => String(v).replace(/;/g,',')).join(';'));
+  const blob = new Blob(['\ufeff' + head + '\n' + rows.join('\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'barry-events.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast(T().rCsvDone);
+}
+function copySummary(){
+  const t = T();
+  const line = D => D.name + ': ' + fmt(D.typeform) + ' Typeform · ' + fmt(D.leads) + ' Leads · ' + fmt(D.regs) + ' ' + t.wRegs + ' · ' + t.wShow + ' ' + pctS(D.show, D.regs) + ' · ' + fmt(D.coaching) + ' Coaching · ' + fmt(D.upsell) + ' Upsell · ' + fmtE(D.revenue);
+  navigator.clipboard.writeText(line(W1) + '\n' + line(W2)).then(() => toast(t.rCopyDone));
+}
+function renderIntegrations(){
+  const t = T();
+  const SRC = [['Typeform','&#128221;'],['GHL','&#128101;'],['WebinarJam','&#127909;'],['Leadtable','&#128203;'],['Stripe','&#128179;'],['Make','&#128257;']];
+  document.getElementById('int-cards').innerHTML = SRC.map(pair => {
+    const name = pair[0], ic = pair[1];
+    const hit = EVENTS.find(e => (name === 'Make') ? e.kind === 'sync' : (e.source || '').toLowerCase().includes(name.toLowerCase()));
+    return '<div class="card int-card"><span class="iic">' + ic + '</span><span><b>' + name + '</b><br>' +
+      (hit ? '<span class="st on">● ' + t.iOn + '</span> <span class="st" style="color:var(--text-muted)">· ' + t.iLast(fmtTs(hit.ts)) + '</span>'
+           : '<span class="st off">○ ' + t.iOff + '</span>') + '</span></div>';
+  }).join('');
+}
+function renderHelp(){
+  const t = T();
+  const entries = STAGE_KEYS.map(k => t.stages[k]).concat([[t.kpiShow, t.tipShow(fmt(W2.show), fmt(W2.regs))],[t.kpiRevenue, t.tipRevenue]]);
+  document.getElementById('help-cards').innerHTML = entries.map(pair =>
+    '<div class="card help-block"><b>' + pair[0] + '</b>' + pair[1] + '</div>').join('');
+}
+function renderSettings(){
+  document.getElementById('set-acc-mail').textContent = window._userEmail || '–';
+}
+async function doSettingsPassword(){
+  const t = T();
+  const err = document.getElementById('spwerr');
+  err.style.display = 'none';
+  const p1 = document.getElementById('spw1').value, p2 = document.getElementById('spw2').value;
+  if (p1.length < 8) { err.textContent = t.pwShort; err.style.display = 'block'; return; }
+  if (p1 !== p2) { err.textContent = t.pwMismatch; err.style.display = 'block'; return; }
+  const { error } = await sb.auth.updateUser({ password: p1 });
+  if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
+  document.getElementById('spw1').value = ''; document.getElementById('spw2').value = '';
+  toast(t.setPwDone);
+}
 document.querySelectorAll('#viewseg button').forEach(b => {
   b.addEventListener('click', () => {
     document.querySelectorAll('#viewseg button').forEach(x => x.classList.remove('active'));
@@ -1119,6 +1413,7 @@ function renderAll(){
   const t = T();
   setHtml('greeting', `${t.hello}, ${window._userName || ''} &#128075;`);
   kpiTiles(); bigchart(); feed(); events(); funnel(); table();
+  renderPage(curPage);
 }
 window.addEventListener('resize', () => { if (loggedIn) bigchart(); });
 init();
