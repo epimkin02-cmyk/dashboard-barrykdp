@@ -546,7 +546,7 @@
         <div class="card fade">
           <div class="cardhead">
             <div><span class="eyebrow" id="t-ev-eyebrow"></span><h2 id="t-ev-h2"></h2><div class="sub" id="t-ev-sub"></div></div>
-            <span class="tbl-search">&#128269; <span id="t-ev-search"></span></span>
+            <span class="tbl-search">&#128269; <input id="evq" autocomplete="off" style="background:transparent;border:none;outline:none;color:var(--text-primary);font-size:12.5px;width:150px"></span>
           </div>
           <div style="overflow-x:auto">
           <table>
@@ -810,7 +810,7 @@ const I18N = {
     xRCall: 'Gesprächsquote', xTCall: 'Gebuchte Strategiegespräche ÷ Teilnehmer. Misst, wie stark das Webinar zum Termin führt.',
     xRClose: 'Abschlussquote', xTClose: 'Coaching-Käufe ÷ Gespräche. Der Vertriebshebel.',
     xRUpsell: 'Upsell-Quote', xTUpsell: 'Upsell-Käufe ÷ Coaching-Käufe. Zusatzumsatz pro gewonnenem Kunden.',
-    updatedAt: n => `Aktualisiert ${n}`, refreshed: 'Daten aktualisiert',
+    updatedAt: n => `Aktualisiert ${n}`, refreshed: 'Daten aktualisiert', offline: 'Keine Verbindung – zeige letzten Stand.',
     emptyList: 'Noch keine Ereignisse – sie erscheinen hier automatisch, sobald die Make-Anbindung live ist.',
     langToast: 'Sprache: Deutsch',
   },
@@ -913,7 +913,7 @@ const I18N = {
     xRCall: 'Call rate', xTCall: 'Booked strategy calls ÷ attendees. Measures how strongly the webinar drives bookings.',
     xRClose: 'Close rate', xTClose: 'Coaching purchases ÷ calls. The sales lever.',
     xRUpsell: 'Upsell rate', xTUpsell: 'Upsell purchases ÷ coaching purchases. Extra revenue per won customer.',
-    updatedAt: n => `Updated ${n}`, refreshed: 'Data refreshed',
+    updatedAt: n => `Updated ${n}`, refreshed: 'Data refreshed', offline: 'No connection – showing last state.',
     emptyList: 'No events yet – they will appear here automatically once the Make integration is live.',
     langToast: 'Language: English',
   },
@@ -1017,7 +1017,8 @@ function translate(){
   setHtml('t-greet-sub', t.greetSub); setHtml('t-chip-compare', t.chipCompare);
   setHtml('t-chart-eyebrow', t.chartEyebrow); setHtml('t-chart-h2', t.chartH2); setHtml('t-chart-sub', t.chartSub);
   setHtml('t-feed-h2', t.feedH2); setHtml('t-tab-now', t.tabNow); setHtml('t-tab-yday', t.tabYday); setHtml('t-tab-week', t.tabWeek);
-  setHtml('t-ev-eyebrow', t.evEyebrow); setHtml('t-ev-h2', t.evH2); setHtml('t-ev-sub', t.evSub); setHtml('t-ev-search', t.evSearch);
+  setHtml('t-ev-eyebrow', t.evEyebrow); setHtml('t-ev-h2', t.evH2); setHtml('t-ev-sub', t.evSub);
+  const evq = document.getElementById('evq'); if (evq) evq.placeholder = t.evSearch;
   setHtml('th-contact', t.thContact); setHtml('th-event', t.thEvent); setHtml('th-source', t.thSource);
   setHtml('th-when', t.thWhen); setHtml('th-amount', t.thAmount);
   setHtml('t-cta-b', t.ctaB); setHtml('t-cta-s', t.ctaS); setHtml('t-cta-btn', t.ctaBtn);
@@ -1125,13 +1126,14 @@ async function refreshData(silent){
     setHtml('upd', T().updatedAt(lastUpd.toLocaleTimeString(LOC(), {hour:'2-digit', minute:'2-digit'})));
     renderAll();
     if (!silent) toast(T().refreshed);
-  } catch(e) {}
+  } catch(e) { if (!silent) toast(T().offline); }
 }
 function manualRefresh(){ if (loggedIn) refreshData(false); }
 setInterval(() => { if (loggedIn) refreshData(true); }, 60000);
 document.getElementById('pw').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
 document.getElementById('mail2').addEventListener('keydown', e => { if(e.key === 'Enter') doForgot(); });
 document.getElementById('npw2').addEventListener('keydown', e => { if(e.key === 'Enter') doNewPassword(); });
+document.getElementById('evq').addEventListener('input', () => events());
 
 /* ================= Daten laden ================= */
 async function enterApp(){
@@ -1165,6 +1167,8 @@ async function enterApp(){
   document.getElementById('app').style.display = 'block';
   translate();
   renderAll();
+  const initial = location.hash.replace('#', '');
+  if (PAGES.includes(initial) && initial !== 'overview') showPage(initial, true);
 }
 function fmtDate(d){ const x = new Date(d); return x.toLocaleDateString(LOC()); }
 function fmtTs(ts){
@@ -1177,14 +1181,14 @@ function fmtTs(ts){
 function kpiTiles(){
   const t = T();
   const items = [
-    { label:t.kpiTypeform, value: fmt(W2.typeform), d: dpct(W2.typeform, W1.typeform), spark:[30,34,31,38,40,44,43,49,52,55,58,62], tip:t.tipTypeform },
-    { label:t.kpiShow, value: pctS(W2.show, W2.regs), d: dpct(pct(W2.show,W2.regs), pct(W1.show,W1.regs)), spark:[40,42,41,44,43,46,45,47,48,47,49,50], tip:t.tipShow(fmt(W2.show), fmt(W2.regs)) },
-    { label:t.kpiCoaching, value: fmt(W2.coaching), d: dpct(W2.coaching, W1.coaching), spark:[10,12,11,14,15,14,17,18,20,22,24,26], tip:t.tipCoaching },
-    { label:t.kpiRevenue, value: fmtE(W2.revenue), d: dpct(W2.revenue, W1.revenue), spark:[55,60,58,66,72,70,79,86,92,101,118,145], tip:t.tipRevenue },
+    { label:t.kpiTypeform, value: fmt(W2.typeform), d: dpct(W2.typeform, W1.typeform), spark:[30,34,31,38,40,44,43,49,52,55,58,62], tip:t.tipTypeform, goto:'leads' },
+    { label:t.kpiShow, value: pctS(W2.show, W2.regs), d: dpct(pct(W2.show,W2.regs), pct(W1.show,W1.regs)), spark:[40,42,41,44,43,46,45,47,48,47,49,50], tip:t.tipShow(fmt(W2.show), fmt(W2.regs)), goto:'funnel' },
+    { label:t.kpiCoaching, value: fmt(W2.coaching), d: dpct(W2.coaching, W1.coaching), spark:[10,12,11,14,15,14,17,18,20,22,24,26], tip:t.tipCoaching, goto:'sales' },
+    { label:t.kpiRevenue, value: fmtE(W2.revenue), d: dpct(W2.revenue, W1.revenue), spark:[55,60,58,66,72,70,79,86,92,101,118,145], tip:t.tipRevenue, goto:'exec' },
   ];
   document.getElementById('kpis').innerHTML = items.map(k => {
     const up = k.d >= 0;
-    return `<div class="tile">
+    return `<div class="tile" style="cursor:pointer" onclick="showPage('${k.goto}')">
       <div class="label">${k.label}<i class="info" data-tip="${k.tip.replace(/"/g,'&quot;')}">i</i></div>
       <div class="row"><span class="value">${k.value}</span>${spark(k.spark, up)}</div>
       <div class="delta ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(k.d).toLocaleString(LOC(),{maximumFractionDigits:1})} % ${t.vs} ${W1.name}</div>
@@ -1267,7 +1271,10 @@ function feed(){
   }).join('');
 }
 function events(){
-  document.getElementById('events').innerHTML = EVENTS.filter(e => e.kind !== 'sync').map(e => `
+  const q = (document.getElementById('evq') ? document.getElementById('evq').value : '').trim().toLowerCase();
+  document.getElementById('events').innerHTML = EVENTS.filter(e => e.kind !== 'sync').filter(e =>
+    !q || [e.contact, e.label, kindLabel(e), e.webinar, e.source].filter(Boolean).some(x => x.toLowerCase().includes(q))
+  ).map(e => `
     <tr>
       <td><span class="who"><span class="avatar" style="width:28px;height:28px;font-size:11px">${e.initials || '··'}</span>${e.contact || '–'}</span></td>
       <td><span class="badge"><span class="b-dot" style="background:${KIND_DOT(e.kind)}"></span>${kindLabel(e)}</span></td>
@@ -1286,9 +1293,11 @@ function crumbFor(pg){
   const lbl = {overview:t.navOverview, exec:t.navExec, funnel:t.navFunnel, leads:'Leads', sales:t.navSales, webinars:t.navWebinars, reports:t.navReports, integrations:t.navInt, help:t.navHelp, settings:t.navSettings, search:t.qTitle}[pg] || pg;
   return sec + ' &nbsp;/&nbsp; <b>' + lbl + '</b>';
 }
-function showPage(pg){
+let navLock = false;
+function showPage(pg, fromHash){
   curPage = pg;
   document.body.classList.remove('nav-open');
+  if (!fromHash && location.hash !== '#' + pg) { navLock = true; location.hash = pg; }
   PAGES.forEach(p => { const el = document.getElementById('page-'+p); if (el) el.style.display = p===pg ? 'block' : 'none'; });
   document.querySelectorAll('.nav-item').forEach(x => x.classList.toggle('active', x.dataset.page === pg));
   setHtml('crumbs', crumbFor(pg));
@@ -1307,6 +1316,12 @@ function renderPage(pg){
   if (pg==='search') renderSearch();
 }
 document.querySelectorAll('.nav-item[data-page]').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
+window.addEventListener('hashchange', () => {
+  if (navLock) { navLock = false; return; }
+  const pg = location.hash.replace('#', '') || 'overview';
+  if (loggedIn && PAGES.includes(pg)) showPage(pg, true);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.body.classList.remove('nav-open'); });
 
 /* ================= Suche ================= */
 let searchQ = '';
@@ -1567,7 +1582,7 @@ function attachTips(){
       tip.style.left = x + 'px'; tip.style.top = y + 'px';
     };
     n.addEventListener('mousemove', show);
-    n.addEventListener('click', show);
+    n.addEventListener('click', e => { e.stopPropagation(); show(e); });
     n.addEventListener('mouseleave', () => tip.style.display = 'none');
   });
 }
