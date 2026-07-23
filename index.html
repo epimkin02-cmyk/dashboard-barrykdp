@@ -267,6 +267,10 @@
   }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   .upd { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+  .trow { display:flex; align-items:center; gap:10px; padding: 9px 0; border-top: 1px solid var(--grid); font-size: 13px; }
+  .trow:first-child { border-top:none; }
+  .tdot { width:8px; height:8px; border-radius:50%; flex:none; }
+  .trow .tm { margin-left:auto; color: var(--text-muted); font-size: 12px; }
   /* Executive-Cockpit */
   .ex-hero { font-size: 48px; font-weight: 800; letter-spacing: -0.02em; margin-top: 8px; }
   .strow { display:grid; grid-template-columns: minmax(150px,1.1fr) minmax(140px,1.6fr) auto auto auto; gap: 14px; align-items: center; padding: 13px 0; border-top: 1px solid var(--grid); }
@@ -684,6 +688,11 @@
             <button class="btn-line" onclick="doLogout()">Logout</button>
           </div>
           <div class="card">
+            <h2 id="t-set-team-h2"></h2>
+            <p class="sub" id="t-set-team-sub" style="margin-top:4px"></p>
+            <div id="team-list" style="margin-top:8px"></div>
+          </div>
+          <div class="card">
             <h2 id="t-set-sys-h2"></h2>
             <p class="sub" id="t-set-sys" style="margin-top:4px; line-height:1.7"></p>
           </div>
@@ -793,6 +802,9 @@ const I18N = {
     setLangH2: 'Sprache', setLangSub: 'Gilt für alle Texte sowie Zahlen- und Datumsformate. Wird gespeichert.',
     setPwH2: 'Passwort ändern', setPw1: 'Neues Passwort', setPw2: 'Wiederholen', setPwBtn: 'Speichern', setPwDone: 'Passwort geändert!',
     setAccH2: 'Konto', setAccAs: 'Angemeldet als',
+    setTeamH2: 'Team-Aktivität', setTeamSub: 'Wer war zuletzt im Dashboard?',
+    tOnline: 'online', tLast: n => `zuletzt ${n}`,
+    tNoData: 'Noch keine Aktivitätsdaten – erscheinen, sobald sich Teammitglieder anmelden. (Voraussetzung: das Presence-SQL wurde in Supabase ausgeführt.)',
     setSysH2: 'System', setSys: 'Dashboard: Vercel · Datenbank & Login: Supabase (EU) · Datenfluss: Make.<br>Design: Dark · Neon-Grün · Version 2.0',
     qEyebrow: 'Suche', qTitle: 'Suche', qHint: 'Tippe oben links ins Suchfeld (⌘K) – durchsucht Kontakte, Ereignisse, Webinare und Quellen.',
     qFor: n => `Treffer für „${n}“`, qNone: n => `Keine Treffer für „${n}“`,
@@ -896,6 +908,15 @@ const I18N = {
     setLangH2: 'Language', setLangSub: 'Applies to all texts plus number and date formats. Saved automatically.',
     setPwH2: 'Change password', setPw1: 'New password', setPw2: 'Repeat', setPwBtn: 'Save', setPwDone: 'Password changed!',
     setAccH2: 'Account', setAccAs: 'Signed in as',
+    setTeamH2: 'Team-Aktivität', setTeamSub: 'Wer war zuletzt im Dashboard?',
+    tOnline: 'online', tLast: n => `zuletzt ${n}`,
+    tNoData: 'Noch keine Aktivitätsdaten – erscheinen, sobald sich Teammitglieder anmelden. (Voraussetzung: das Presence-SQL wurde in Supabase ausgeführt.)',
+    setTeamH2: 'Team activity', setTeamSub: 'Who was last in the dashboard?',
+    tOnline: 'online', tLast: n => `last ${n}`,
+    tNoData: 'No activity data yet – appears once team members sign in. (Requires the presence SQL in Supabase.)',
+    setTeamH2: 'Team activity', setTeamSub: 'Who was last in the dashboard?',
+    tOnline: 'online', tLast: n => `last ${n}`,
+    tNoData: 'No activity data yet – appears once team members sign in. (Requires the presence SQL in Supabase.)',
     setSysH2: 'System', setSys: 'Dashboard: Vercel · Database & login: Supabase (EU) · Data flow: Make.<br>Design: dark · neon green · version 2.0',
     qEyebrow: 'Search', qTitle: 'Search', qHint: 'Type into the search box top left (⌘K) – searches contacts, events, webinars and sources.',
     qFor: n => `Results for “${n}”`, qNone: n => `No results for “${n}”`,
@@ -926,7 +947,7 @@ const LOC = () => lang === 'de' ? 'de-DE' : 'en-US';
 
 /* ================= Zustand ================= */
 const STAGE_KEYS = ['typeform','leads','regs','show','calls','coaching','upsell'];
-let W1 = null, W2 = null, TS2 = [], EVENTS = [];
+let W1 = null, W2 = null, TS2 = [], EVENTS = [], PRESENCE = [];
 let view = 'both';
 let loggedIn = false;
 let curPage = 'overview';
@@ -1008,6 +1029,7 @@ function translate(){
   setHtml('t-set-pw-h2', t.setPwH2); setHtml('t-set-pw1', t.setPw1); setHtml('t-set-pw2', t.setPw2); setHtml('t-set-pw-btn', t.setPwBtn);
   setHtml('t-set-acc-h2', t.setAccH2); setHtml('t-set-acc-as', t.setAccAs);
   setHtml('t-set-sys-h2', t.setSysH2); setHtml('t-set-sys', t.setSys);
+  setHtml('t-set-team-h2', t.setTeamH2); setHtml('t-set-team-sub', t.setTeamSub);
   setHtml('t-q-eyebrow', t.qEyebrow);
   setHtml('t-nav-exec', t.navExec);
   setHtml('t-x-eyebrow', t.xEyebrow); setHtml('t-x-h1', t.xH1); setHtml('t-x-sub', t.xSub);
@@ -1114,6 +1136,18 @@ async function doNewPassword(){
 }
 async function doLogout(){ await sb.auth.signOut(); location.reload(); }
 let lastUpd = null;
+async function pingPresence(){
+  try {
+    if (!window._userId) return;
+    await sb.from('presence').upsert({ user_id: window._userId, email: window._userEmail, last_seen: new Date().toISOString() });
+  } catch(e) {}
+}
+async function loadPresence(){
+  try {
+    const { data } = await sb.from('presence').select('*').order('last_seen', { ascending: false });
+    if (data) PRESENCE = data;
+  } catch(e) {}
+}
 async function refreshData(silent){
   try {
     const [wRes, eRes] = await Promise.all([
@@ -1122,6 +1156,7 @@ async function refreshData(silent){
     ]);
     if (!wRes.error && wRes.data && wRes.data.length >= 2) { W1 = wRes.data[0]; W2 = wRes.data[1]; TS2 = W2.reg_timeline || []; }
     if (!eRes.error && eRes.data) EVENTS = eRes.data;
+    await pingPresence(); await loadPresence();
     lastUpd = new Date();
     setHtml('upd', T().updatedAt(lastUpd.toLocaleTimeString(LOC(), {hour:'2-digit', minute:'2-digit'})));
     renderAll();
@@ -1159,6 +1194,8 @@ async function enterApp(){
   document.getElementById('user-mail').textContent = email;
   window._userName = name.charAt(0).toUpperCase() + name.slice(1);
   window._userEmail = email;
+  window._userId = (uRes.data && uRes.data.user && uRes.data.user.id) || null;
+  await pingPresence(); await loadPresence();
 
   loggedIn = true;
   lastUpd = new Date();
@@ -1435,7 +1472,21 @@ function renderHelp(){
     '<div class="card help-block"><b>' + pair[0] + '</b>' + pair[1] + '</div>').join('');
 }
 function renderSettings(){
+  const t = T();
   document.getElementById('set-acc-mail').textContent = window._userEmail || '–';
+  const el = document.getElementById('team-list');
+  if (!PRESENCE.length) { el.innerHTML = '<p class="sub" style="white-space:normal">' + t.tNoData + '</p>'; return; }
+  const now = Date.now();
+  el.innerHTML = PRESENCE.map(p => {
+    const onl = now - new Date(p.last_seen).getTime() < 3 * 60 * 1000;
+    const nm = (p.email || '?').split('@')[0];
+    return '<div class="trow">' +
+      '<span class="tdot" style="background:' + (onl ? 'var(--delta-good)' : 'var(--baseline)') + '"></span>' +
+      '<span class="avatar" style="width:26px;height:26px;font-size:10px">' + nm.slice(0,2).toUpperCase() + '</span>' +
+      '<span><b>' + nm.charAt(0).toUpperCase() + nm.slice(1) + '</b><br><span style="color:var(--text-muted);font-size:11px">' + (p.email || '') + '</span></span>' +
+      '<span class="tm">' + (onl ? '<b style="color:var(--delta-good)">' + t.tOnline + '</b>' : t.tLast(fmtTs(p.last_seen))) + '</span>' +
+    '</div>';
+  }).join('');
 }
 async function doSettingsPassword(){
   const t = T();
