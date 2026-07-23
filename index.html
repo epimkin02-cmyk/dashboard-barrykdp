@@ -51,10 +51,9 @@
   .eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--petrol); }
   .backdrop { position: fixed; inset: 0; z-index: 0; pointer-events: none;
     background:
-      radial-gradient(480px 320px at 85% 8%,  var(--glow-1), transparent 70%),
-      radial-gradient(520px 360px at 10% 92%, var(--glow-2), transparent 70%),
-      repeating-linear-gradient(0deg,  transparent 0 95px, var(--border) 95px 96px),
-      repeating-linear-gradient(90deg, transparent 0 95px, var(--border) 95px 96px);
+      radial-gradient(720px 480px at 85% 5%,  var(--glow-1), transparent 70%),
+      radial-gradient(640px 460px at 8% 95%,  var(--glow-2), transparent 70%),
+      radial-gradient(900px 600px at 50% 45%, rgba(74,222,128,0.05), transparent 72%);
   }
   @keyframes fadeUp { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
   .fade { animation: fadeUp .45s ease both; }
@@ -63,7 +62,7 @@
   .toggles { display:flex; gap:8px; align-items:center; }
   .lang {
     display:inline-flex; border:1px solid var(--border); border-radius:999px;
-    background: var(--surface-1); overflow:hidden;
+    background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); overflow:hidden;
   }
   .lang button {
     padding: 6px 12px; border:none; background:transparent; cursor:pointer;
@@ -80,7 +79,9 @@
   /* ================= LOGIN ================= */
   #login { position: fixed; inset: 0; z-index: 60; display:flex; align-items:center; justify-content:center; padding: 20px; }
   .login-shell {
-    background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px;
+    background: rgba(16,26,22,0.55);
+    backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255,255,255,0.10); border-radius: 18px;
     display:grid; grid-template-columns: 1fr 1fr;
     width: 980px; max-width: 100%; overflow: hidden;
     box-shadow: 0 24px 70px -20px rgba(36,29,21,.25);
@@ -172,7 +173,9 @@
   #app { display: none; position: relative; z-index: 1; }
   .shell { display: grid; grid-template-columns: 252px 1fr; min-height: 100vh; }
   aside {
-    background: var(--surface-1); border-right: 1px solid var(--border);
+    background: rgba(255,255,255,0.035);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid rgba(255,255,255,0.08);
     padding: 20px 14px; display:flex; flex-direction:column; gap: 4px;
     position: sticky; top: 0; height: 100vh; overflow-y: auto;
   }
@@ -209,9 +212,15 @@
   .greet h1 { font-size: 25px; font-weight: 800; letter-spacing: -.02em; }
   .greet p { font-size: 13.5px; color: var(--text-muted); margin-top: 5px; }
   .greet p .accent { font-size: 14.5px; }
-  .chip { display:inline-flex; align-items:center; gap: 8px; border: 1px solid var(--border); background: var(--surface-1); border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 600; color: var(--text-secondary); }
+  .chip { display:inline-flex; align-items:center; gap: 8px; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 600; color: var(--text-secondary); }
 
-  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px; padding: 20px 22px; transition: transform .2s, box-shadow .2s; }
+  .card {
+    background: rgba(255,255,255,0.045);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.09); border-radius: 18px; padding: 20px 22px;
+    box-shadow: 0 16px 40px -20px rgba(0,0,0,0.5);
+    transition: transform .2s, box-shadow .2s;
+  }
   .card h2 { font-size: 15px; font-weight: 800; letter-spacing:-.01em; display:flex; align-items:center; gap: 8px; }
   .card .cardhead { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
   .card .cardhead .sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
@@ -280,7 +289,7 @@
   .badge { display:inline-flex; align-items:center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 11px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-secondary); background: var(--page); }
   .badge .b-dot { width: 7px; height: 7px; border-radius: 50%; }
 
-  .seg { display:inline-flex; border:1px solid var(--border); border-radius: 999px; background: var(--surface-1); overflow:hidden; margin-bottom: 18px; }
+  .seg { display:inline-flex; border:1px solid rgba(255,255,255,0.10); border-radius: 999px; background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); overflow:hidden; margin-bottom: 18px; }
   .seg button { padding: 10px 20px; font-size: 13px; font-weight: 700; border:none; background:transparent; color: var(--text-secondary); cursor:pointer; }
   .seg button.active { background: var(--text-primary); color: var(--page); font-weight:800; }
   .legend { display:flex; gap:18px; font-size:13px; font-weight:600; color:var(--text-secondary); margin-bottom:16px; }
@@ -300,7 +309,7 @@
 
   .ctabar {
     margin-top: 16px; border-radius: 18px; padding: 22px 26px;
-    background: var(--teal-deep); color: #F2F7F4; border: 1px solid rgba(74,222,128,0.25);
+    background: rgba(74,222,128,0.08); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); color: #F2F7F4; border: 1px solid rgba(74,222,128,0.28);
     display:flex; align-items:center; justify-content:space-between; gap: 16px; flex-wrap: wrap;
   }
   .ctabar b { font-size: 15px; font-weight: 800; display:block; }
