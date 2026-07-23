@@ -7,21 +7,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<script src="./supabase.js"></script>
 <style>
   :root { color-scheme: light dark; }
   .viz-root {
     color-scheme: light;
-    /* Barry KDP CI – light (Cream) */
-    --page:           #FAF6EE;   /* Cream */
+    --page:           #FAF6EE;
     --surface-1:      #FFFEFA;
-    --text-primary:   #241D15;   /* Ink */
+    --text-primary:   #241D15;
     --text-secondary: #57493A;
-    --text-muted:     #8A7B66;   /* Gray */
-    --grid:           #ECE3D2;   /* Sand */
-    --baseline:       #E4D7BE;   /* Sand Deep */
+    --text-muted:     #8A7B66;
+    --grid:           #ECE3D2;
+    --baseline:       #E4D7BE;
     --border:         rgba(36,29,21,0.08);
-    --series-1:       #E87A1E;   /* Petrol 500 – Webinar #1 */
-    --series-2:       #14B8A6;   /* Teal – Webinar #2 */
+    --series-1:       #E87A1E;
+    --series-2:       #14B8A6;
     --petrol:         #E87A1E;
     --petrol-soft:    #EE9A54;
     --petrol-deep:    #A03C00;
@@ -41,7 +41,6 @@
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) .viz-root {
       color-scheme: dark;
-      /* Barry KDP CI – dark (Ink) */
       --page:           #1C1610;
       --surface-1:      #241D15;
       --text-primary:   #FAF6EE;
@@ -70,15 +69,8 @@
     font-size: 14px; min-height: 100vh;
   }
   button, input { font-family: inherit; }
-  .accent {
-    font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 500;
-    color: var(--petrol); letter-spacing: 0;
-  }
-  .eyebrow {
-    font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--petrol);
-  }
-  /* soft brand glows + grid backdrop */
+  .accent { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 500; color: var(--petrol); }
+  .eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--petrol); }
   .backdrop { position: fixed; inset: 0; z-index: 0; pointer-events: none;
     background:
       radial-gradient(480px 320px at 85% 8%,  var(--glow-1), transparent 70%),
@@ -88,10 +80,7 @@
   }
 
   /* ================= LOGIN ================= */
-  #login {
-    position: fixed; inset: 0; z-index: 60; background: transparent;
-    display:flex; align-items:center; justify-content:center; padding: 20px;
-  }
+  #login { position: fixed; inset: 0; z-index: 60; display:flex; align-items:center; justify-content:center; padding: 20px; }
   .login-shell {
     background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px;
     display:grid; grid-template-columns: 1fr 1fr;
@@ -112,7 +101,6 @@
   .lockup .lt span { display:block; font-size: 8.5px; font-weight: 700; letter-spacing: .22em; color: var(--text-muted); margin-top: 1px; }
   .login-form .lockup { margin-bottom: 38px; }
   .login-form h1 { font-size: 27px; font-weight: 800; letter-spacing: -.02em; text-align:center; margin-bottom: 6px; }
-  .login-form h1 .accent { font-weight: 500; }
   .login-form .sub { font-size: 13px; color: var(--text-muted); text-align:center; margin-bottom: 30px; }
   .login-form label { font-size: 12.5px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display:block; }
   .login-form label span { color: var(--petrol-deep); }
@@ -124,8 +112,12 @@
   }
   .inputwrap input:focus { outline: 2px solid var(--petrol); outline-offset: -1px; }
   .inputwrap .ic { position:absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
+  #loginerr {
+    display:none; margin: 0 0 16px; padding: 10px 14px; border-radius: 9px;
+    background: rgba(160,60,0,.08); border: 1px solid rgba(160,60,0,.25);
+    color: var(--delta-bad); font-size: 12.5px; font-weight: 600;
+  }
   .login-row { display:flex; justify-content:space-between; align-items:center; font-size: 12.5px; color: var(--text-secondary); margin: 2px 0 22px; }
-  .login-row a { color: var(--text-primary); text-decoration: none; font-weight: 700; }
   .btn-primary {
     width: 100%; padding: 15px; border:none; border-radius: 999px;
     background: linear-gradient(135deg, var(--petrol), var(--petrol-soft));
@@ -134,14 +126,7 @@
     box-shadow: 0 12px 28px -10px rgba(232,122,30,.65);
   }
   .btn-primary:hover { filter: brightness(1.04); }
-  .or { display:flex; align-items:center; gap: 12px; color: var(--text-muted); font-size: 12px; margin: 18px 0; }
-  .or::before, .or::after { content:""; flex:1; height:1px; background: var(--grid); }
-  .sso { display:flex; gap: 12px; }
-  .sso button {
-    flex:1; padding: 11px; border: 1px solid var(--baseline); border-radius: 999px;
-    background: transparent; color: var(--text-primary); font-size: 13px; font-weight: 600; cursor: pointer;
-  }
-  .sso button:hover { background: var(--hover); }
+  .btn-primary:disabled { opacity:.6; cursor: wait; }
   .login-form .hint { font-size: 11.5px; color: var(--text-muted); margin-top: 22px; text-align:center; line-height: 1.55; }
   .login-promo {
     position: relative; overflow: hidden;
@@ -167,7 +152,6 @@
   .promo-bars i { flex: 1; background: var(--bar-dim); border-radius: 3px 3px 0 0; display:block; }
   .promo-bars i.hl { background: linear-gradient(180deg, var(--petrol-soft), var(--petrol)); }
   .promo-quote { font-size: 17px; line-height: 1.55; color: var(--text-secondary); }
-  .promo-quote .accent { font-size: 17px; }
   .promo-quote b { color: var(--text-primary); font-weight: 800; }
   .promo-who { display:flex; align-items:center; gap: 10px; font-size: 12.5px; color: var(--text-muted); }
   .avatar {
@@ -182,7 +166,6 @@
   /* ================= APP SHELL ================= */
   #app { display: none; position: relative; z-index: 1; }
   .shell { display: grid; grid-template-columns: 252px 1fr; min-height: 100vh; }
-
   aside {
     background: var(--surface-1); border-right: 1px solid var(--border);
     padding: 20px 14px; display:flex; flex-direction:column; gap: 4px;
@@ -195,10 +178,7 @@
     padding: 8px 12px; color: var(--text-muted); font-size: 13px; margin-bottom: 14px;
     background: var(--page);
   }
-  .side-search kbd {
-    margin-left:auto; font-size: 10px; border: 1px solid var(--border); border-radius: 4px;
-    padding: 1px 5px; color: var(--text-muted); font-family: inherit;
-  }
+  .side-search kbd { margin-left:auto; font-size: 10px; border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--text-muted); font-family: inherit; }
   .side-sec { font-size: 10px; letter-spacing: .16em; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 12px 8px 6px; }
   .nav-item {
     display:flex; align-items:center; gap: 10px; width: 100%;
@@ -208,51 +188,36 @@
   .nav-item .nic { width: 18px; text-align:center; opacity:.85; }
   .nav-item:hover { background: var(--hover); color: var(--text-primary); }
   .nav-item.active { background: var(--text-primary); color: var(--page); font-weight: 800; }
-  .nav-item .soon {
-    margin-left: auto; font-size: 9.5px; font-weight: 700; letter-spacing:.06em; color: var(--text-muted);
-    border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px;
-  }
+  .nav-item .soon { margin-left: auto; font-size: 9.5px; font-weight: 700; letter-spacing:.06em; color: var(--text-muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; }
   .side-bottom { margin-top: auto; }
-  .side-user {
-    display:flex; align-items:center; gap: 10px; padding: 10px;
-    border: 1px solid var(--border); border-radius: 14px; margin-top: 10px;
-  }
+  .side-user { display:flex; align-items:center; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 14px; margin-top: 10px; }
   .side-user .nm { font-size: 13px; font-weight: 800; }
-  .side-user .em { font-size: 11px; color: var(--text-muted); }
+  .side-user .em { font-size: 11px; color: var(--text-muted); word-break: break-all; }
+  .side-user .logout {
+    margin-left:auto; flex:none; border: 1px solid var(--border); background: transparent;
+    border-radius: 8px; padding: 5px 9px; font-size: 10.5px; font-weight: 700;
+    color: var(--text-muted); cursor: pointer; letter-spacing:.04em;
+  }
+  .side-user .logout:hover { color: var(--delta-bad); border-color: var(--delta-bad); }
 
   main { padding: 0 28px 48px; min-width: 0; }
-  .topbar {
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 22px;
-  }
+  .topbar { display:flex; align-items:center; justify-content:space-between; padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
   .crumbs { font-size: 13px; color: var(--text-muted); }
   .crumbs b { color: var(--text-primary); font-weight: 700; }
   .top-ic { display:flex; gap: 8px; }
-  .top-ic span {
-    width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 9px;
-    display:flex; align-items:center; justify-content:center; color: var(--text-secondary);
-    background: var(--surface-1); font-size: 15px;
-  }
+  .top-ic span { width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 9px; display:flex; align-items:center; justify-content:center; color: var(--text-secondary); background: var(--surface-1); font-size: 15px; }
   .greet { display:flex; align-items:flex-end; justify-content:space-between; gap: 16px; margin-bottom: 22px; flex-wrap:wrap; }
   .greet h1 { font-size: 25px; font-weight: 800; letter-spacing: -.02em; }
   .greet p { font-size: 13.5px; color: var(--text-muted); margin-top: 5px; }
   .greet p .accent { font-size: 14.5px; }
-  .chip {
-    display:inline-flex; align-items:center; gap: 8px;
-    border: 1px solid var(--border); background: var(--surface-1);
-    border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 600; color: var(--text-secondary);
-  }
+  .chip { display:inline-flex; align-items:center; gap: 8px; border: 1px solid var(--border); background: var(--surface-1); border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 600; color: var(--text-secondary); }
 
-  .card {
-    background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px;
-    padding: 20px 22px;
-  }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 18px; padding: 20px 22px; }
   .card h2 { font-size: 15px; font-weight: 800; letter-spacing:-.01em; display:flex; align-items:center; gap: 8px; }
   .card .cardhead { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
   .card .cardhead .sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
   .card .eyebrow { display:block; margin-bottom: 5px; }
 
-  /* KPI – Glass */
   .kpis { display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-bottom: 16px; }
   .tile {
     backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
@@ -278,7 +243,6 @@
   .grid-main { display:grid; grid-template-columns: minmax(0, 1.9fr) minmax(280px, 1fr); gap: 14px; margin-bottom: 16px; }
   @media (max-width: 980px) { .grid-main { grid-template-columns: 1fr; } .shell { grid-template-columns: 1fr; } aside { position: static; height:auto; } }
 
-  /* Bar chart */
   .bigchart { position: relative; height: 260px; margin-top: 8px; }
   .gridlines { position:absolute; inset: 0 0 26px 34px; }
   .gridlines i { position:absolute; left:0; right:0; height:1px; background: var(--grid); }
@@ -292,47 +256,29 @@
   .xlab { position:absolute; inset: auto 0 0 34px; display:flex; gap: 10px; padding: 0 6px; }
   .xlab span { flex:1; text-align:center; font-size: 11px; color: var(--text-muted); }
   .hline { position:absolute; left: 34px; right: 0; border-top: 1.5px dashed var(--baseline); }
-  .hbadge {
-    position:absolute; transform: translate(-50%, -130%);
-    background: var(--text-primary); color: var(--page);
-    font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; white-space: nowrap;
-  }
+  .hbadge { position:absolute; transform: translate(-50%, -130%); background: var(--text-primary); color: var(--page); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
 
-  /* Feed */
   .feed-tabs { display:flex; border:1px solid var(--border); border-radius: 999px; overflow:hidden; margin-bottom: 14px; }
   .feed-tabs button { flex:1; padding: 8px 4px; font-size: 12px; font-weight: 700; border:none; background:transparent; color: var(--text-muted); cursor:pointer; }
   .feed-tabs button.active { background: var(--text-primary); color: var(--page); }
   .feed-count { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
   .fitem { display:flex; gap: 12px; padding: 10px 0; border-top: 1px solid var(--grid); }
   .fitem:first-child { border-top:none; }
-  .fic {
-    width: 30px; height: 30px; border-radius: 9px; flex:none;
-    border: 1px solid var(--border); background: var(--page);
-    display:flex; align-items:center; justify-content:center; font-size: 13px;
-  }
+  .fic { width: 30px; height: 30px; border-radius: 9px; flex:none; border: 1px solid var(--border); background: var(--page); display:flex; align-items:center; justify-content:center; font-size: 13px; }
   .fitem .ft { font-size: 13px; font-weight: 700; }
   .fitem .fs { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   .fitem .tm { margin-left:auto; font-size: 11px; color: var(--text-muted); flex:none; }
 
-  /* Table */
-  .tbl-search {
-    display:flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius: 999px;
-    padding: 7px 14px; font-size: 12.5px; color: var(--text-muted); background: var(--page);
-  }
+  .tbl-search { display:flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius: 999px; padding: 7px 14px; font-size: 12.5px; color: var(--text-muted); background: var(--page); }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
   th { color: var(--text-muted); font-weight: 700; font-size: 11px; letter-spacing:.08em; text-transform: uppercase; }
   td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
   tbody tr:hover td { background: var(--hover); }
   .who { display:flex; align-items:center; gap: 9px; font-weight: 600; }
-  .badge {
-    display:inline-flex; align-items:center; gap: 6px;
-    font-size: 12px; font-weight: 600; padding: 3px 11px; border-radius: 999px;
-    border: 1px solid var(--border); color: var(--text-secondary); background: var(--page);
-  }
+  .badge { display:inline-flex; align-items:center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 11px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-secondary); background: var(--page); }
   .badge .b-dot { width: 7px; height: 7px; border-radius: 50%; }
 
-  /* Funnel page */
   .seg { display:inline-flex; border:1px solid var(--border); border-radius: 999px; background: var(--surface-1); overflow:hidden; margin-bottom: 18px; }
   .seg button { padding: 10px 20px; font-size: 13px; font-weight: 700; border:none; background:transparent; color: var(--text-secondary); cursor:pointer; }
   .seg button.active { background: var(--text-primary); color: var(--page); font-weight:800; }
@@ -351,7 +297,6 @@
   .barrow .num b { color: var(--text-primary); font-variant-numeric: tabular-nums; font-weight: 800; }
   td.better { color: var(--delta-good); font-weight: 800; }
 
-  /* CTA bar (brand touch) */
   .ctabar {
     margin-top: 16px; border-radius: 18px; padding: 22px 26px;
     background: var(--teal-deep); color: #FAF6EE;
@@ -390,21 +335,13 @@
       </div>
       <h1>Willkommen <span class="accent">zurück.</span></h1>
       <p class="sub">Alle Webinar-Zahlen an einem Ort – nur für das Team.</p>
+      <div id="loginerr"></div>
       <label>E-Mail-Adresse <span>*</span></label>
-      <div class="inputwrap"><span class="ic">&#9993;</span><input type="email" id="mail" value="demo@team.de"></div>
+      <div class="inputwrap"><span class="ic">&#9993;</span><input type="email" id="mail" placeholder="name@team.de" autocomplete="email"></div>
       <label>Passwort <span>*</span></label>
-      <div class="inputwrap"><span class="ic">&#128274;</span><input type="password" id="pw" value="demo1234"></div>
-      <div class="login-row">
-        <span><input type="checkbox" checked id="keep"> <label for="keep" style="display:inline">Angemeldet bleiben</label></span>
-        <a href="#" onclick="return false">Passwort vergessen?</a>
-      </div>
-      <button class="btn-primary" onclick="doLogin()">Anmelden</button>
-      <div class="or">Oder</div>
-      <div class="sso">
-        <button onclick="doLogin()">G&nbsp;&nbsp;Mit Google anmelden</button>
-        <button onclick="doLogin()">&#63743;&nbsp;&nbsp;Mit Apple anmelden</button>
-      </div>
-      <p class="hint">Prototyp: Jede Eingabe funktioniert. In der echten Version: Zugriff nur für eingeladene Team-Accounts, SSL-verschlüsselt.</p>
+      <div class="inputwrap"><span class="ic">&#128274;</span><input type="password" id="pw" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn-primary" id="loginbtn" onclick="doLogin()">Anmelden</button>
+      <p class="hint">Zugriff nur für eingeladene Team-Accounts · SSL-verschlüsselt.<br>Passwort vergessen oder neuer Account? Bei Egor melden.</p>
     </div>
     <div class="login-promo">
       <div class="promo-mock">
@@ -427,7 +364,6 @@
 <!-- ================= APP ================= -->
 <div id="app">
   <div class="shell">
-
     <aside>
       <div class="lockup">
         <span class="mark">B</span>
@@ -451,8 +387,9 @@
         <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#10067;</span> Hilfe</button>
         <button class="nav-item" disabled style="opacity:.55"><span class="nic">&#9881;</span> Einstellungen</button>
         <div class="side-user">
-          <span class="avatar">EG</span>
-          <span><span class="nm">Egor</span><br><span class="em">demo@team.de</span></span>
+          <span class="avatar" id="user-ini">–</span>
+          <span><span class="nm" id="user-name">–</span><br><span class="em" id="user-mail">–</span></span>
+          <button class="logout" onclick="doLogout()" title="Abmelden">Logout</button>
         </div>
       </div>
     </aside>
@@ -463,11 +400,10 @@
         <div class="top-ic"><span>&#128276;</span><span>&#9881;</span></div>
       </div>
 
-      <!-- ============ PAGE: OVERVIEW ============ -->
       <section id="page-overview">
         <div class="greet">
           <div>
-            <h1>Hallo, Egor &#128075;</h1>
+            <h1 id="greeting">Hallo &#128075;</h1>
             <p>Mach deine Webinare <span class="accent">profitabler</span> – alle Zahlen, automatisch aktualisiert über Make.</p>
           </div>
           <span class="chip">&#128197; Webinar #2 vs. #1 &nbsp;▾</span>
@@ -487,9 +423,9 @@
           <div class="card">
             <div class="cardhead"><div><span class="eyebrow">Live</span><h2>Neueste Aktivitäten</h2></div></div>
             <div class="feed-tabs">
-              <button class="active">Heute</button><button disabled style="opacity:.6">Gestern</button><button disabled style="opacity:.6">Diese Woche</button>
+              <button class="active">Aktuell</button><button disabled style="opacity:.6">Gestern</button><button disabled style="opacity:.6">Diese Woche</button>
             </div>
-            <div class="feed-count">6 neue Ereignisse heute</div>
+            <div class="feed-count" id="feed-count"></div>
             <div class="feed" id="feed"></div>
           </div>
         </div>
@@ -513,7 +449,6 @@
         </div>
       </section>
 
-      <!-- ============ PAGE: FUNNEL ============ -->
       <section id="page-funnel" style="display:none">
         <div class="greet">
           <div>
@@ -534,8 +469,8 @@
             <div><span class="eyebrow">Schritt für Schritt</span><h2 id="funnel-title">Der Funnel</h2><div class="sub">Die Prozentzahl sagt: So viele aus der vorherigen Stufe haben es bis hierher geschafft. Mit der Maus über die Balken fahren zeigt Details.</div></div>
           </div>
           <div class="legend" id="funnel-legend">
-            <span class="key"><span class="sw" style="background:var(--series-1)"></span>Webinar #1 (12.06.2026)</span>
-            <span class="key"><span class="sw" style="background:var(--series-2)"></span>Webinar #2 (10.07.2026)</span>
+            <span class="key"><span class="sw" style="background:var(--series-1)"></span><span id="leg1">Webinar #1</span></span>
+            <span class="key"><span class="sw" style="background:var(--series-2)"></span><span id="leg2">Webinar #2</span></span>
           </div>
           <div id="funnel"></div>
         </div>
@@ -548,7 +483,7 @@
         </div>
       </section>
 
-      <footer>Prototyp mit Beispieldaten · Barry KDP · Webinar Tracking · Zugriff nur für eingeladene Teammitglieder</footer>
+      <footer>Barry KDP · Webinar Tracking · Zugriff nur für eingeladene Teammitglieder</footer>
     </main>
   </div>
 </div>
@@ -556,7 +491,12 @@
 <div id="tooltip"></div>
 
 <script>
-/* ================= Daten ================= */
+/* ================= Supabase ================= */
+const SUPABASE_URL = "https://jkylhdlnimjuqcfukoxs.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_1hWjDPNN0L7ZIH_Lw1K7gg_7FsZIu6h";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ================= Zustand ================= */
 const STAGES = [
   { key:"typeform",  name:"Typeform-Eintragungen",     desc:"Alle, die das Anmeldeformular ausgefüllt haben (Quelle: Typeform)" },
   { key:"leads",     name:"Qualifizierte Leads",        desc:"Davon als qualifizierter Kontakt in GHL angelegt (Quelle: GHL)" },
@@ -566,54 +506,98 @@ const STAGES = [
   { key:"coaching",  name:"Coaching gekauft",           desc:"Davon im Gespräch das Coaching gekauft (Quelle: Stripe/GHL)" },
   { key:"upsell",    name:"Upsell gekauft",             desc:"Davon zusätzlich das Aufbau-Produkt gekauft (Quelle: Stripe)" },
 ];
-const W1 = { typeform:412, leads:348, regs:296, show:132, calls:41, coaching:18, upsell:7,  revenue:98630 };
-const W2 = { typeform:486, leads:402, regs:351, show:174, calls:57, coaching:26, upsell:12, revenue:145280 };
-const TS2 = [11,13,15,18,20,19,23,26,28,31,33,35,37,42];
-
-const KPI = [
-  { label:"Typeform-Eintragungen", value:"486", d:+18.0, spark:[30,34,31,38,40,44,43,49,52,55,58,62],
-    tip:"Wie viele Menschen das Typeform-Formular ausgefüllt haben – der Startpunkt des Funnels. Vergleich: Webinar #2 vs. #1." },
-  { label:"Show-Rate", value:"49,6 %", d:+11.2, spark:[40,42,41,44,43,46,45,47,48,47,49,50],
-    tip:"Anteil der Angemeldeten, die wirklich live im Webinar waren. 174 von 351 Angemeldeten." },
-  { label:"Coaching-Käufe", value:"26", d:+44.4, spark:[10,12,11,14,15,14,17,18,20,22,24,26],
-    tip:"Teilnehmer, die nach dem Strategiegespräch das Coaching gekauft haben (Stripe/GHL)." },
-  { label:"Umsatz", value:"145.280 €", d:+47.3, spark:[55,60,58,66,72,70,79,86,92,101,118,145],
-    tip:"Gesamtumsatz aus Coaching- und Upsell-Käufen von Webinar #2." },
-];
-
-const FEED = [
-  { ic:"&#128100;", t:"Neuer qualifizierter Lead", s:"Ayşe D. · Typeform → GHL", tm:"10:21" },
-  { ic:"&#127909;", t:"Neue Webinar-Anmeldung", s:"Webinar #3 · WebinarJam", tm:"10:05" },
-  { ic:"&#128257;", t:"Make-Szenario gelaufen", s:"„Stripe → Events“ · 2 neue Käufe übertragen", tm:"09:48" },
-  { ic:"&#128197;", t:"Strategiegespräch gebucht", s:"Tim B. · Leadtable", tm:"09:40" },
-  { ic:"&#128176;", t:"Upsell-Kauf erfasst", s:"Laura M. · 1.490 € · Stripe", tm:"08:12" },
-  { ic:"&#9989;",   t:"Tages-Sync abgeschlossen", s:"Alle Quellen aktuell · keine Fehler", tm:"07:55" },
-];
-
-const EVENTS = [
-  { who:"Laura M.",  ini:"LM", ev:["Upsell gekauft","good"],   wb:"Webinar #2", src:"Stripe",     tm:"10.07., 21:14", amt:"1.490 €" },
-  { who:"Jonas K.",  ini:"JK", ev:["Coaching gekauft","good"], wb:"Webinar #2", src:"Stripe/GHL", tm:"10.07., 20:56", amt:"4.900 €" },
-  { who:"Tim B.",    ini:"TB", ev:["Gespräch gebucht","cyan"], wb:"Webinar #2", src:"Leadtable",  tm:"11.07., 09:40", amt:"–" },
-  { who:"Miriam S.", ini:"MS", ev:["Live dabei (Show)","cyan"],wb:"Webinar #2", src:"WebinarJam", tm:"10.07., 19:03", amt:"–" },
-  { who:"Ayşe D.",   ini:"AD", ev:["Neuer Lead","mut"],        wb:"Webinar #3 (Vorlauf)", src:"Typeform", tm:"heute, 10:21", amt:"–" },
-];
-
-const fmt  = n => n.toLocaleString("de-DE");
-const fmtE = n => n.toLocaleString("de-DE") + " €";
-const pct  = (a,b) => b ? (100*a/b) : 0;
-const pctS = (a,b) => pct(a,b).toLocaleString("de-DE",{minimumFractionDigits:1, maximumFractionDigits:1}) + " %";
-const css = v => getComputedStyle(document.querySelector(".viz-root")).getPropertyValue(v).trim();
-
+let W1 = null, W2 = null, TS2 = [], KPI = [], EVENTS = [];
 let view = "both";
 
-/* ================= Login / Navigation ================= */
-function doLogin(){
+const fmt  = n => Number(n).toLocaleString("de-DE");
+const fmtE = n => Number(n).toLocaleString("de-DE") + " €";
+const pct  = (a,b) => b ? (100*a/b) : 0;
+const pctS = (a,b) => pct(a,b).toLocaleString("de-DE",{minimumFractionDigits:1, maximumFractionDigits:1}) + " %";
+const dpct = (a,b) => b ? 100*(a-b)/b : 0;
+const css = v => getComputedStyle(document.querySelector(".viz-root")).getPropertyValue(v).trim();
+
+/* ================= Auth ================= */
+async function init(){
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) await enterApp();
+}
+async function doLogin(){
+  const btn = document.getElementById("loginbtn");
+  const err = document.getElementById("loginerr");
+  err.style.display = "none";
+  btn.disabled = true; btn.textContent = "Anmelden…";
+  const { error } = await sb.auth.signInWithPassword({
+    email: document.getElementById("mail").value.trim(),
+    password: document.getElementById("pw").value,
+  });
+  if (error) {
+    err.textContent = "Anmeldung fehlgeschlagen – E-Mail oder Passwort ist nicht korrekt.";
+    err.style.display = "block";
+    btn.disabled = false; btn.textContent = "Anmelden";
+    return;
+  }
+  await enterApp();
+  btn.disabled = false; btn.textContent = "Anmelden";
+}
+async function doLogout(){ await sb.auth.signOut(); location.reload(); }
+document.getElementById("pw").addEventListener("keydown", e => { if(e.key === "Enter") doLogin(); });
+
+/* ================= Daten laden ================= */
+async function enterApp(){
+  const [wRes, eRes, uRes] = await Promise.all([
+    sb.from("webinars").select("*").order("id"),
+    sb.from("events").select("*").order("ts", { ascending: false }).limit(8),
+    sb.auth.getUser(),
+  ]);
+  if (wRes.error || !wRes.data || wRes.data.length < 2) {
+    const err = document.getElementById("loginerr");
+    err.textContent = "Angemeldet, aber Daten konnten nicht geladen werden. Ist das SQL-Setup gelaufen?";
+    err.style.display = "block";
+    return;
+  }
+  W1 = wRes.data[0]; W2 = wRes.data[1];
+  TS2 = W2.reg_timeline || [];
+  EVENTS = eRes.data || [];
+  buildKpis();
+
+  const email = uRes.data?.user?.email || "team";
+  const name = email.split("@")[0];
+  document.getElementById("user-ini").textContent = name.slice(0,2).toUpperCase();
+  document.getElementById("user-name").textContent = name.charAt(0).toUpperCase() + name.slice(1);
+  document.getElementById("user-mail").textContent = email;
+  document.getElementById("greeting").innerHTML = `Hallo, ${name.charAt(0).toUpperCase() + name.slice(1)} &#128075;`;
+  document.getElementById("leg1").textContent = W1.name + (W1.event_date ? ` (${fmtDate(W1.event_date)})` : "");
+  document.getElementById("leg2").textContent = W2.name + (W2.event_date ? ` (${fmtDate(W2.event_date)})` : "");
+
   document.getElementById("login").style.display = "none";
   document.getElementById("app").style.display = "block";
   renderAll();
 }
-document.getElementById("pw").addEventListener("keydown", e => { if(e.key === "Enter") doLogin(); });
+function fmtDate(d){ const x = new Date(d); return x.toLocaleDateString("de-DE"); }
+function fmtTs(ts){
+  const d = new Date(ts), now = new Date();
+  const hm = d.toLocaleTimeString("de-DE", {hour:"2-digit", minute:"2-digit"});
+  return d.toDateString() === now.toDateString() ? `heute, ${hm}` : `${d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})}, ${hm}`;
+}
 
+function buildKpis(){
+  KPI = [
+    { label:"Typeform-Eintragungen", value: fmt(W2.typeform), d: dpct(W2.typeform, W1.typeform),
+      spark:[30,34,31,38,40,44,43,49,52,55,58,62],
+      tip:"Wie viele Menschen das Typeform-Formular ausgefüllt haben – der Startpunkt des Funnels. Vergleich: Webinar #2 vs. #1." },
+    { label:"Show-Rate", value: pctS(W2.show, W2.regs), d: dpct(pct(W2.show,W2.regs), pct(W1.show,W1.regs)),
+      spark:[40,42,41,44,43,46,45,47,48,47,49,50],
+      tip:`Anteil der Angemeldeten, die wirklich live im Webinar waren. ${fmt(W2.show)} von ${fmt(W2.regs)} Angemeldeten.` },
+    { label:"Coaching-Käufe", value: fmt(W2.coaching), d: dpct(W2.coaching, W1.coaching),
+      spark:[10,12,11,14,15,14,17,18,20,22,24,26],
+      tip:"Teilnehmer, die nach dem Strategiegespräch das Coaching gekauft haben (Stripe/GHL)." },
+    { label:"Umsatz", value: fmtE(W2.revenue), d: dpct(W2.revenue, W1.revenue),
+      spark:[55,60,58,66,72,70,79,86,92,101,118,145],
+      tip:"Gesamtumsatz aus Coaching- und Upsell-Käufen von Webinar #2." },
+  ];
+}
+
+/* ================= Navigation ================= */
 document.querySelectorAll(".nav-item[data-page]").forEach(b => {
   if (!b.dataset.page) return;
   b.addEventListener("click", () => {
@@ -628,7 +612,6 @@ document.querySelectorAll(".nav-item[data-page]").forEach(b => {
     if (pg === "funnel") { funnel(); table(); }
   });
 });
-
 document.querySelectorAll("#viewseg button").forEach(b => {
   b.addEventListener("click", () => {
     document.querySelectorAll("#viewseg button").forEach(x => x.classList.remove("active"));
@@ -655,7 +638,7 @@ function kpiTiles(){
     return `<div class="tile">
       <div class="label">${k.label}<i class="info" data-tip="${k.tip.replace(/"/g,'&quot;')}">i</i></div>
       <div class="row"><span class="value">${k.value}</span>${spark(k.spark, up)}</div>
-      <div class="delta ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(k.d).toLocaleString("de-DE",{maximumFractionDigits:1})} % vs. Webinar #1</div>
+      <div class="delta ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(k.d).toLocaleString("de-DE",{maximumFractionDigits:1})} % vs. ${W1.name}</div>
     </div>`;
   }).join("");
   attachTips();
@@ -664,7 +647,9 @@ function kpiTiles(){
 /* ================= Big bar chart ================= */
 function bigchart(){
   const el = document.getElementById("bigchart");
-  const maxY = 50, n = TS2.length;
+  if (!TS2.length) { el.innerHTML = ""; return; }
+  const n = TS2.length;
+  const maxY = Math.max(10, Math.ceil(Math.max(...TS2) / 10) * 10);
   const hiIdx = TS2.indexOf(Math.max(...TS2));
   let grid = "";
   for (let g = 0; g <= maxY; g += 10) {
@@ -672,14 +657,14 @@ function bigchart(){
     grid += `<i style="top:${top}%"></i><label style="top:${top}%">${g}</label>`;
   }
   const bars = TS2.map((v,i) => {
-    const day = i - 13;
+    const day = i - (n - 1);
     const lab = day === 0 ? "Webinar-Tag" : `${Math.abs(day)} Tage vorher`;
     return `<div class="bcol ${i===hiIdx?'hl':''}" data-tip="<b>${lab}</b><br><b>${v}</b> Anmeldungen">
       <i style="height:${100*v/maxY}%"></i>
     </div>`;
   }).join("");
   const xlab = TS2.map((v,i) => {
-    const day = i - 13;
+    const day = i - (n - 1);
     return `<span>${(i%2===1) ? (day===0 ? "Tag 0" : day) : ""}</span>`;
   }).join("");
   el.innerHTML = `
@@ -689,12 +674,15 @@ function bigchart(){
     <div class="xlab">${xlab}</div>`;
   requestAnimationFrame(() => {
     const chart = el.getBoundingClientRect();
-    const hl = el.querySelector(".bcol.hl i").getBoundingClientRect();
+    const hlEl = el.querySelector(".bcol.hl i");
+    if (!hlEl) return;
+    const hl = hlEl.getBoundingClientRect();
     const line = el.querySelector(".hline");
     line.style.top = (hl.top - chart.top) + "px";
     const badge = document.createElement("div");
     badge.className = "hbadge";
-    badge.textContent = "Tag 0 · 42";
+    const day = hiIdx - (n - 1);
+    badge.textContent = `${day === 0 ? "Tag 0" : "Tag " + day} · ${TS2[hiIdx]}`;
     badge.style.left = (hl.left - chart.left + hl.width/2) + "px";
     badge.style.top = (hl.top - chart.top) + "px";
     el.appendChild(badge);
@@ -703,35 +691,38 @@ function bigchart(){
 }
 
 /* ================= Feed & Events ================= */
+const KIND_ICON = { lead:"&#128100;", show:"&#127909;", sync:"&#128257;", call:"&#128197;", upsell:"&#128176;", coaching:"&#128176;" };
+const KIND_DOT  = k => (k === "upsell" || k === "coaching") ? css('--mint')
+                    : (k === "call" || k === "show") ? css('--cyan')
+                    : css('--baseline');
 function feed(){
-  document.getElementById("feed").innerHTML = FEED.map(f =>
-    `<div class="fitem"><span class="fic">${f.ic}</span><span><span class="ft">${f.t}</span><br><span class="fs">${f.s}</span></span><span class="tm">${f.tm}</span></div>`
-  ).join("");
+  document.getElementById("feed-count").textContent = `${EVENTS.length} letzte Ereignisse`;
+  document.getElementById("feed").innerHTML = EVENTS.slice(0, 6).map(f => {
+    const sub = [f.contact, f.amount ? fmtE(f.amount) : null, f.source].filter(Boolean).join(" · ");
+    return `<div class="fitem"><span class="fic">${KIND_ICON[f.kind] || "&#9679;"}</span><span><span class="ft">${f.label}</span><br><span class="fs">${sub || "–"}</span></span><span class="tm">${fmtTs(f.ts)}</span></div>`;
+  }).join("");
 }
 function events(){
-  const dot = kind => kind === "good" ? css('--mint')
-            : kind === "cyan" ? css('--cyan')
-            : css('--baseline');
-  document.getElementById("events").innerHTML = EVENTS.map(e => `
+  document.getElementById("events").innerHTML = EVENTS.filter(e => e.kind !== "sync").map(e => `
     <tr>
-      <td><span class="who"><span class="avatar" style="width:28px;height:28px;font-size:11px">${e.ini}</span>${e.who}</span></td>
-      <td><span class="badge"><span class="b-dot" style="background:${dot(e.ev[1])}"></span>${e.ev[0]}</span></td>
-      <td>${e.wb}</td>
-      <td>${e.src}</td>
-      <td>${e.tm}</td>
-      <td class="r">${e.amt}</td>
+      <td><span class="who"><span class="avatar" style="width:28px;height:28px;font-size:11px">${e.initials || "··"}</span>${e.contact || "–"}</span></td>
+      <td><span class="badge"><span class="b-dot" style="background:${KIND_DOT(e.kind)}"></span>${e.label}</span></td>
+      <td>${e.webinar || "–"}</td>
+      <td>${e.source || "–"}</td>
+      <td>${fmtTs(e.ts)}</td>
+      <td class="r">${e.amount ? fmtE(e.amount) : "–"}</td>
     </tr>`).join("");
 }
 
-/* ================= Funnel page ================= */
+/* ================= Funnel ================= */
 function funnel(){
   const el = document.getElementById("funnel");
   const legend = document.getElementById("funnel-legend");
   const title = document.getElementById("funnel-title");
   const max = Math.max(W1.typeform, W2.typeform);
-  const series = view === "w1" ? [["Webinar #1", W1, "--series-1"]]
-               : view === "w2" ? [["Webinar #2", W2, "--series-2"]]
-               : [["Webinar #1", W1, "--series-1"], ["Webinar #2", W2, "--series-2"]];
+  const series = view === "w1" ? [[W1.name, W1, "--series-1"]]
+               : view === "w2" ? [[W2.name, W2, "--series-2"]]
+               : [[W1.name, W1, "--series-1"], [W2.name, W2, "--series-2"]];
   legend.style.display = series.length > 1 ? "flex" : "none";
   title.textContent = series.length > 1 ? "Der Funnel" : "Der Funnel – " + series[0][0];
 
@@ -761,7 +752,7 @@ function funnel(){
 }
 function table(){
   const t = document.getElementById("tbl");
-  let rows = `<thead><tr><th>Stufe</th><th class="r">Webinar #1</th><th class="r">Conversion</th><th class="r">Webinar #2</th><th class="r">Conversion</th></tr></thead><tbody>`;
+  let rows = `<thead><tr><th>Stufe</th><th class="r">${W1.name}</th><th class="r">Conversion</th><th class="r">${W2.name}</th><th class="r">Conversion</th></tr></thead><tbody>`;
   STAGES.forEach((st, i) => {
     const p1 = i ? pct(W1[st.key], W1[STAGES[i-1].key]) : null;
     const p2 = i ? pct(W2[st.key], W2[STAGES[i-1].key]) : null;
@@ -799,6 +790,7 @@ document.addEventListener("click", e => { if (!e.target.closest("[data-tip]")) t
 
 function renderAll(){ kpiTiles(); bigchart(); feed(); events(); funnel(); table(); }
 window.addEventListener("resize", () => { if (document.getElementById("app").style.display === "block") bigchart(); });
+init();
 </script>
 </body>
 </html>
