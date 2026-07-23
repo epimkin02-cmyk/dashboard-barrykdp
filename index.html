@@ -267,6 +267,25 @@
   }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   .upd { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+  /* Executive-Cockpit */
+  .ex-hero { font-size: 48px; font-weight: 800; letter-spacing: -0.02em; margin-top: 8px; }
+  .strow { display:grid; grid-template-columns: minmax(150px,1.1fr) minmax(140px,1.6fr) auto auto auto; gap: 14px; align-items: center; padding: 13px 0; border-top: 1px solid var(--grid); }
+  .strow:first-child { border-top: none; }
+  .stlabel { font-size: 13.5px; font-weight: 700; display:flex; align-items:center; gap:6px; }
+  .stlabel .info { margin-left: 0; }
+  .stmeter { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .stmeter i { display:block; height: 100%; border-radius: 999px; transition: width .6s cubic-bezier(.2,.7,.3,1); }
+  .stval { font-size: 13.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .stval b { font-size: 15px; }
+  .stgoal { color: var(--text-muted); font-size: 12px; }
+  .stchip { display:inline-flex; align-items:center; gap: 5px; font-size: 11px; font-weight: 800; letter-spacing:.04em; padding: 4px 11px; border-radius: 999px; white-space: nowrap; }
+  .stchip.ok   { color: var(--delta-good); background: rgba(74,222,128,.12); }
+  .stchip.warn { color: #FBBF24; background: rgba(251,191,36,.12); }
+  .stchip.bad  { color: var(--delta-bad); background: rgba(248,113,113,.12); }
+  .locked { display:flex; align-items:center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--grid); font-size: 13px; color: var(--text-muted); }
+  .locked:first-child { border-top: none; }
+  .locked b { color: var(--text-secondary); font-size: 13.5px; min-width: 56px; }
+  @media (max-width: 760px) { .strow { grid-template-columns: 1fr auto; } .stmeter { grid-column: 1 / -1; } }
 
   .bigchart { position: relative; height: 260px; margin-top: 8px; }
   .gridlines { position:absolute; inset: 0 0 26px 34px; }
@@ -458,6 +477,7 @@
 
       <div class="side-sec" id="t-nav"></div>
       <button class="nav-item active" data-page="overview"><span class="nic">&#9638;</span> <span id="t-nav-overview"></span></button>
+      <button class="nav-item" data-page="exec"><span class="nic">&#9678;</span> <span id="t-nav-exec"></span></button>
       <button class="nav-item" data-page="funnel"><span class="nic">&#9660;</span> <span id="t-nav-funnel"></span></button>
       <button class="nav-item" data-page="leads"><span class="nic">&#128101;</span> Leads</button>
       <button class="nav-item" data-page="sales"><span class="nic">&#128179;</span> <span id="t-nav-sales"></span></button>
@@ -573,6 +593,28 @@
           <div style="overflow-x:auto">
           <table id="tbl"></table>
           </div>
+        </div>
+      </section>
+
+      <!-- ============ COCKPIT ============ -->
+      <section id="page-exec" style="display:none">
+        <div class="greet"><div><span class="eyebrow" id="t-x-eyebrow"></span><h1 id="t-x-h1"></h1><p id="t-x-sub"></p></div></div>
+        <div class="grid-main" style="grid-template-columns: minmax(0,1.25fr) minmax(280px,1fr)">
+          <div class="card">
+            <span class="eyebrow" id="t-x-ns-eyebrow"></span>
+            <div class="ex-hero" id="x-hero"></div>
+            <div class="delta up" id="x-hero-delta" style="font-size:13px"></div>
+            <p class="sub" id="t-x-ns-sub" style="margin-top:12px"></p>
+          </div>
+          <div class="card">
+            <span class="eyebrow" id="t-x-ue-eyebrow"></span>
+            <h2 id="t-x-ue-h2"></h2>
+            <div id="x-locked" style="margin-top:8px"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <div class="cardhead"><div><span class="eyebrow" id="t-x-tree-eyebrow"></span><h2 id="t-x-tree-h2"></h2><div class="sub" id="t-x-tree-sub"></div></div></div>
+          <div id="x-tree"></div>
         </div>
       </section>
 
@@ -754,6 +796,20 @@ const I18N = {
     setSysH2: 'System', setSys: 'Dashboard: Vercel · Datenbank & Login: Supabase (EU) · Datenfluss: Make.<br>Design: Dark · Neon-Grün · Version 2.0',
     qEyebrow: 'Suche', qTitle: 'Suche', qHint: 'Tippe oben links ins Suchfeld (⌘K) – durchsucht Kontakte, Ereignisse, Webinare und Quellen.',
     qFor: n => `Treffer für „${n}“`, qNone: n => `Keine Treffer für „${n}“`,
+    navExec: 'Cockpit', xEyebrow: 'Executive', xH1: 'Cockpit', xSub: 'Die Fragen der Geschäftsführung – auf einen Blick.',
+    xNsEyebrow: 'North Star', xNsSub: 'Gesamtumsatz aus Webinar #2 (Coaching + Upsell). Die Stellschrauben dafür stehen im KPI-Baum darunter – gesteuert wird an den Hebeln, nicht am Ergebnis.',
+    xUeEyebrow: 'Unit Economics', xUeH2: 'Wirtschaftlichkeit',
+    xLocked: 'Wartet auf die Werbekosten-Anbindung (Stufe 2 im Ausbauplan)',
+    xTreeEyebrow: 'Stellschrauben', xTreeH2: 'KPI-Baum',
+    xTreeSub: 'Jede Zeile ist ein steuerbarer Hebel auf dem Weg zum Umsatz. Balken & Ampel = Ist vs. Ziel · Pfeil = Entwicklung vs. Webinar #1. Die Ziele sind Startwerte – passen wir gemeinsam an.',
+    xTarget: 'Ziel', xOk: 'Im Ziel', xWarn: 'Knapp', xBad: 'Unter Ziel',
+    xRTypeform: 'Eintragungen', xTTypeform: 'Ausgefüllte Typeform-Formulare – der Zulauf oben im Funnel.',
+    xRLeadQ: 'Lead-Qualität', xTLeadQ: 'Qualifizierte Leads ÷ Eintragungen. Misst, wie gut der Zulauf zur Zielgruppe passt.',
+    xRRegQ: 'Anmeldequote', xTRegQ: 'Webinar-Anmeldungen ÷ Leads. Misst, wie gut die Einladung zieht.',
+    xRShow: 'Show-Rate', xTShow: 'Live-Teilnehmer ÷ Anmeldungen. Der stärkste Hebel vor dem Verkauf – Erinnerungen & Vorfreude zahlen hier ein.',
+    xRCall: 'Gesprächsquote', xTCall: 'Gebuchte Strategiegespräche ÷ Teilnehmer. Misst, wie stark das Webinar zum Termin führt.',
+    xRClose: 'Abschlussquote', xTClose: 'Coaching-Käufe ÷ Gespräche. Der Vertriebshebel.',
+    xRUpsell: 'Upsell-Quote', xTUpsell: 'Upsell-Käufe ÷ Coaching-Käufe. Zusatzumsatz pro gewonnenem Kunden.',
     updatedAt: n => `Aktualisiert ${n}`, refreshed: 'Daten aktualisiert',
     emptyList: 'Noch keine Ereignisse – sie erscheinen hier automatisch, sobald die Make-Anbindung live ist.',
     langToast: 'Sprache: Deutsch',
@@ -843,6 +899,20 @@ const I18N = {
     setSysH2: 'System', setSys: 'Dashboard: Vercel · Database & login: Supabase (EU) · Data flow: Make.<br>Design: dark · neon green · version 2.0',
     qEyebrow: 'Search', qTitle: 'Search', qHint: 'Type into the search box top left (⌘K) – searches contacts, events, webinars and sources.',
     qFor: n => `Results for “${n}”`, qNone: n => `No results for “${n}”`,
+    navExec: 'Cockpit', xEyebrow: 'Executive', xH1: 'Cockpit', xSub: 'The questions leadership asks – at a glance.',
+    xNsEyebrow: 'North Star', xNsSub: 'Total revenue from webinar #2 (coaching + upsell). The levers behind it live in the KPI tree below – you steer the inputs, not the outcome.',
+    xUeEyebrow: 'Unit economics', xUeH2: 'Profitability',
+    xLocked: 'Waiting for the ad-cost integration (step 2 of the roadmap)',
+    xTreeEyebrow: 'Levers', xTreeH2: 'KPI tree',
+    xTreeSub: 'Each row is a controllable lever on the way to revenue. Bar & status = actual vs. target · arrow = trend vs. webinar #1. Targets are starting values – we tune them together.',
+    xTarget: 'Target', xOk: 'On target', xWarn: 'Close', xBad: 'Below target',
+    xRTypeform: 'Sign-ups', xTTypeform: 'Completed Typeform forms – the inflow at the top of the funnel.',
+    xRLeadQ: 'Lead quality', xTLeadQ: 'Qualified leads ÷ sign-ups. Measures how well the inflow fits the audience.',
+    xRRegQ: 'Registration rate', xTRegQ: 'Webinar registrations ÷ leads. Measures how well the invitation converts.',
+    xRShow: 'Show rate', xTShow: 'Live attendees ÷ registrations. The strongest lever before the sale – reminders and anticipation pay in here.',
+    xRCall: 'Call rate', xTCall: 'Booked strategy calls ÷ attendees. Measures how strongly the webinar drives bookings.',
+    xRClose: 'Close rate', xTClose: 'Coaching purchases ÷ calls. The sales lever.',
+    xRUpsell: 'Upsell rate', xTUpsell: 'Upsell purchases ÷ coaching purchases. Extra revenue per won customer.',
     updatedAt: n => `Updated ${n}`, refreshed: 'Data refreshed',
     emptyList: 'No events yet – they will appear here automatically once the Make integration is live.',
     langToast: 'Language: English',
@@ -939,6 +1009,11 @@ function translate(){
   setHtml('t-set-acc-h2', t.setAccH2); setHtml('t-set-acc-as', t.setAccAs);
   setHtml('t-set-sys-h2', t.setSysH2); setHtml('t-set-sys', t.setSys);
   setHtml('t-q-eyebrow', t.qEyebrow);
+  setHtml('t-nav-exec', t.navExec);
+  setHtml('t-x-eyebrow', t.xEyebrow); setHtml('t-x-h1', t.xH1); setHtml('t-x-sub', t.xSub);
+  setHtml('t-x-ns-eyebrow', t.xNsEyebrow); setHtml('t-x-ns-sub', t.xNsSub);
+  setHtml('t-x-ue-eyebrow', t.xUeEyebrow); setHtml('t-x-ue-h2', t.xUeH2);
+  setHtml('t-x-tree-eyebrow', t.xTreeEyebrow); setHtml('t-x-tree-h2', t.xTreeH2); setHtml('t-x-tree-sub', t.xTreeSub);
   setHtml('t-greet-sub', t.greetSub); setHtml('t-chip-compare', t.chipCompare);
   setHtml('t-chart-eyebrow', t.chartEyebrow); setHtml('t-chart-h2', t.chartH2); setHtml('t-chart-sub', t.chartSub);
   setHtml('t-feed-h2', t.feedH2); setHtml('t-tab-now', t.tabNow); setHtml('t-tab-yday', t.tabYday); setHtml('t-tab-week', t.tabWeek);
@@ -1204,11 +1279,11 @@ function events(){
 }
 
 /* ================= Seiten-Router ================= */
-const PAGES = ['overview','funnel','leads','sales','webinars','reports','integrations','help','settings','search'];
+const PAGES = ['overview','exec','funnel','leads','sales','webinars','reports','integrations','help','settings','search'];
 function crumbFor(pg){
   const t = T();
   const sec = (pg==='reports'||pg==='integrations') ? t.navAnalytics : (pg==='help'||pg==='settings') ? 'Support' : (pg==='search') ? t.qEyebrow : t.nav;
-  const lbl = {overview:t.navOverview, funnel:t.navFunnel, leads:'Leads', sales:t.navSales, webinars:t.navWebinars, reports:t.navReports, integrations:t.navInt, help:t.navHelp, settings:t.navSettings, search:t.qTitle}[pg] || pg;
+  const lbl = {overview:t.navOverview, exec:t.navExec, funnel:t.navFunnel, leads:'Leads', sales:t.navSales, webinars:t.navWebinars, reports:t.navReports, integrations:t.navInt, help:t.navHelp, settings:t.navSettings, search:t.qTitle}[pg] || pg;
   return sec + ' &nbsp;/&nbsp; <b>' + lbl + '</b>';
 }
 function showPage(pg){
@@ -1221,6 +1296,7 @@ function showPage(pg){
 }
 function renderPage(pg){
   if (!loggedIn) return;
+  if (pg==='exec') renderExec();
   if (pg==='funnel'){ funnel(); table(); }
   if (pg==='leads') renderLeads();
   if (pg==='sales') renderSales();
@@ -1429,6 +1505,49 @@ function table(){
   });
   rows += `<tr><td><b>${t.totalRevenue}</b></td><td class="r"><b>${fmtE(W1.revenue)}</b></td><td></td><td class="r better"><b>${fmtE(W2.revenue)}</b></td><td></td></tr></tbody>`;
   tbl.innerHTML = rows;
+}
+
+/* ================= Executive-Cockpit ================= */
+const TARGETS = { typeform: 450, leadq: 80, regq: 85, show: 50, call: 30, close: 40, upsell: 40 };
+function renderExec(){
+  const t = T();
+  // North Star
+  setHtml('x-hero', fmtE(W2.revenue));
+  const d = dpct(W2.revenue, W1.revenue);
+  const heroEl = document.getElementById('x-hero-delta');
+  heroEl.className = 'delta ' + (d >= 0 ? 'up' : 'down');
+  heroEl.textContent = (d >= 0 ? '▲ ' : '▼ ') + Math.abs(d).toLocaleString(LOC(), {maximumFractionDigits:1}) + ' % ' + t.vs + ' ' + W1.name;
+  // Unit Economics (gesperrt bis Werbekosten da sind)
+  document.getElementById('x-locked').innerHTML = ['CPL','CAC','ROAS'].map(k =>
+    '<div class="locked"><b>' + k + '</b><span>&#128274; ' + t.xLocked + '</span></div>').join('');
+  // KPI-Baum
+  const rows = [
+    { label: t.xRTypeform, tip: t.xTTypeform, val: W2.typeform, prev: W1.typeform, target: TARGETS.typeform, pctVal: false },
+    { label: t.xRLeadQ,  tip: t.xTLeadQ,  val: pct(W2.leads, W2.typeform),  prev: pct(W1.leads, W1.typeform),  target: TARGETS.leadq,  pctVal: true },
+    { label: t.xRRegQ,   tip: t.xTRegQ,   val: pct(W2.regs, W2.leads),      prev: pct(W1.regs, W1.leads),      target: TARGETS.regq,   pctVal: true },
+    { label: t.xRShow,   tip: t.xTShow,   val: pct(W2.show, W2.regs),       prev: pct(W1.show, W1.regs),       target: TARGETS.show,   pctVal: true },
+    { label: t.xRCall,   tip: t.xTCall,   val: pct(W2.calls, W2.show),      prev: pct(W1.calls, W1.show),      target: TARGETS.call,   pctVal: true },
+    { label: t.xRClose,  tip: t.xTClose,  val: pct(W2.coaching, W2.calls),  prev: pct(W1.coaching, W1.calls),  target: TARGETS.close,  pctVal: true },
+    { label: t.xRUpsell, tip: t.xTUpsell, val: pct(W2.upsell, W2.coaching), prev: pct(W1.upsell, W1.coaching), target: TARGETS.upsell, pctVal: true },
+  ];
+  document.getElementById('x-tree').innerHTML = rows.map(r => {
+    const ratio = r.target ? r.val / r.target : 0;
+    const st = ratio >= 1 ? 'ok' : ratio >= 0.9 ? 'warn' : 'bad';
+    const stIcon = st === 'ok' ? '✓' : st === 'warn' ? '!' : '✗';
+    const stLabel = st === 'ok' ? t.xOk : st === 'warn' ? t.xWarn : t.xBad;
+    const stColor = st === 'ok' ? 'var(--delta-good)' : st === 'warn' ? '#FBBF24' : 'var(--delta-bad)';
+    const vTxt = r.pctVal ? r.val.toLocaleString(LOC(), {maximumFractionDigits:1}) + ' %' : fmt(r.val);
+    const gTxt = r.pctVal ? r.target + ' %' : fmt(r.target);
+    const dd = dpct(r.val, r.prev);
+    return '<div class="strow">' +
+      '<div class="stlabel">' + r.label + '<i class="info" data-tip="' + r.tip.replace(/"/g,'&quot;') + '">i</i></div>' +
+      '<div class="stmeter"><i style="width:' + Math.min(100, ratio*100) + '%; background:' + stColor + '"></i></div>' +
+      '<div class="stval"><b>' + vTxt + '</b> <span class="stgoal">/ ' + t.xTarget + ' ' + gTxt + '</span></div>' +
+      '<div class="delta ' + (dd >= 0 ? 'up' : 'down') + '">' + (dd >= 0 ? '▲' : '▼') + ' ' + Math.abs(dd).toLocaleString(LOC(), {maximumFractionDigits:1}) + ' %</div>' +
+      '<span class="stchip ' + st + '">' + stIcon + ' ' + stLabel + '</span>' +
+    '</div>';
+  }).join('');
+  attachTips();
 }
 
 /* ================= Tooltip ================= */
